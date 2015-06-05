@@ -1,21 +1,20 @@
 __author__ = 'jpatdalton'
 
-
-
 import urllib2
 import json
 import facebook
 import requests
+import columns
 
 APP_SECRET = 'de0ef4983d919423425e08ef6716b66e'
 APP_ID = '1105606712786170'
 client_token = '8f37afb961d3f2264ad736a94fa546ce'
 access_token = '1105606712786170|N51rfQuMviEjoIlqmBdGzZShes8'
+#access_token = 'CAACEdEose0cBACZA5EcHTRdGfPeRBXnqfvCG8VSeK3GiehuiE2YfzRvuY9co8OzEoW8SEKqn3zsoqqKZC8Sf6ZAdF7SsRodLY2Ne7fFG0yvbwMNnUHYBZCZA8kLZBFgVgLDHlZAUYBf8ZAck26MjYdZAlRkvkcThbO0SkrqogjjfdMWpGxVJZAJOgUR4T9OmBNmMUcAdBrZBGAYzE79QIytZAmqsoiYRNbVzLZCezfoVSnW881AZDZD'
 
 def get_page_data(page_id):
     api_endpoint = "https://graph.facebook.com"
     fb_graph_url = api_endpoint+"/"+page_id
-
 
     try:
         api_request = urllib2.Request(fb_graph_url)
@@ -46,20 +45,14 @@ access_token = r.text.split('=')[1]
 '''
 
 
-'''
-graph = facebook.GraphAPI(access_token=access_token)
-graph.request('/search')
-
-'''
-
-
-
-def get_likes(artists, worksheet):
-
-    cell_list_likes = worksheet.range('J3:J102')
-    for n in xrange(100):
-        page_id = get_page_id(artists[n])
-        data = get_page_data(page_id)
-        cell_list_likes[n].value = str(data['likes'])
-
+def get_likes(artists, worksheet, end):
+    col = columns.fb_likes
+    cell_list_likes = worksheet.range(col+'3:'+col+end)
+    for n in xrange(len(artists)):
+        try:
+            page_id = get_page_id(artists[n])
+            data = get_page_data(page_id)
+            cell_list_likes[n].value = str(data['likes'])
+        except Exception, e:
+            print e, ' Facebook error ', artists[n]
     worksheet.update_cells(cell_list_likes)

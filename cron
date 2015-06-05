@@ -1,0 +1,5 @@
+17 0 * * */4 root today = date +%Y%m%d%H%M; scrpr=`find /opt/python/bundle/ -name "billboard_top100"`; cd $scraper; python billboard_top100.py > /home/ec2-user/billboard_log_$today.txt;
+
+17 0 * * */3 root today = date +%Y%m%d%H%M; scrpr=`find /opt/python/bundle/ -name "billboard_top100"`; cd $scraper; python billboard_top100.py > /home/ec2-user/billboard_log_$today.txt;
+
+

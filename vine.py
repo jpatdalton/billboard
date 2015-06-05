@@ -2,7 +2,7 @@ __author__ = 'jpatdalton'
 
 
 import requests
-
+import columns
 
 def get_page_id(name):
     api_endpoint = 'https://api.vineapp.com/users/search/' + name
@@ -13,13 +13,17 @@ def get_page_id(name):
 def get_user_data(id):
     user_endpoint = 'https://api.vineapp.com/users/profiles/' + str(id)
     data = requests.get(user_endpoint).json()["data"]
-    return data['followerCount']
+    if data["verified"]:
+        return data['followerCount']
+    else:
+        print str(data['username']) + ' has no verified Vine account'
+        return 'No verified account'
 
 
-def get_vine_stats(artists, worksheet):
-
-    cell_list_likes = worksheet.range('O3:O102')
-    for n in xrange(100):
+def get_vine_stats(artists, worksheet, end):
+    col = columns.vine
+    cell_list_likes = worksheet.range(col+'3:'+col+end)
+    for n in xrange(len(artists)):
         name = artists[n]
         try:
             page_id = get_page_id(name)

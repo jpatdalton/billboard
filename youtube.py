@@ -6,6 +6,7 @@ __author__ = 'jpatdalton'
 #import apiclient
 #import apiclient,httplib2, oauth2client, uritemplate
 from apiclient.discovery import build
+import columns
 from apiclient.errors import HttpError
 #from oauth2client.tools import argparser
 
@@ -14,18 +15,20 @@ from apiclient.errors import HttpError
 # tab of
 #   https://cloud.google.com/console
 # Please ensure that you have enabled the YouTube Data API for your project.
-DEVELOPER_KEY = "AIzaSyBUsBv64GNUH77pydLRvHbebR1n57GGbzU"
+DEVELOPER_KEY = "AIzaSyA-bhG1enSYC_HDusLMV1cxx1Azstf_r_w"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-def youtube_search(song_titles, worksheet):
+def youtube_search(song_titles, worksheet, indices, end):
   youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                   developerKey=DEVELOPER_KEY)
 
   # Call the search.list method to retrieve results matching the specified
   # query term.
-  cell_list_views = worksheet.range('F3:F102')
-  for n in xrange(100):
+  col = columns.youtube
+  cell_list_views = worksheet.range(col+'3:'+col+end)
+  n=0
+  for ind in indices:
     search_response = youtube.search().list(
       q=song_titles[n],
       part="id",
@@ -40,7 +43,9 @@ def youtube_search(song_titles, worksheet):
       id=vid_id,
       part='statistics'
     ).execute()
-    cell_list_views[n].value = video_response["items"][0]["statistics"]["viewCount"]
+    cell_list_views[ind].value = video_response["items"][0]["statistics"]["viewCount"]
+    n+=1
+
   worksheet.update_cells(cell_list_views)
 
 '''
