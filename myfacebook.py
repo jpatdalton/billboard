@@ -5,6 +5,7 @@ import json
 import facebook
 import requests
 import columns
+import db_setup
 
 APP_SECRET = 'de0ef4983d919423425e08ef6716b66e'
 APP_ID = '1105606712786170'
@@ -22,32 +23,39 @@ def get_page_data(page_id):
 
         try:
             return json.loads(api_response.read())
-        except (ValueError, KeyError, TypeError):
+        except Exception, e:
+            print 'JSON error ', e
             return "JSON error"
 
-    except IOError, e:
+    except Exception, e:
+        print 'not JSON error ', e
         if hasattr(e, 'code'):
             return e.code
         elif hasattr(e, 'reason'):
             return e.reason
 
 def get_page_id(name):
-    api_endpoint = "https://graph.facebook.com/search?q=" + name + "&type=page" + '&access_token='+ access_token
-    #api_endpoint = "https://graph.facebook.com/search?q=" + name + "&type=page" + '&access_token='+APP_ID+'|'+APP_SECRET
-    #requests.get(api_endpoint).json()
-    data = requests.get(api_endpoint).json()["data"]
-    return data[0]["id"]
-'''
-https://graph.facebook.com/search?q=Wiz Khalifa&type=page
-fb_graph_url = 'https://graph.facebook.com/oauth/access_token?client_id=1105606712786170&client_secret=de0ef4983d919423425e08ef6716b66e&grant_type=client_credentials'
-r = requests.get(fb_graph_url)
-access_token = r.text.split('=')[1]
-'''
+    the_id = 'None'
+    try:
+        api_endpoint = "https://graph.facebook.com/search?q=" + name + "&type=page" + '&access_token='+ access_token
+        data = requests.get(api_endpoint).json()["data"]
+        the_id = data[0]["id"]
+    except Exception, e:
+        print 'Cant get Facebook Id for artist: ' + name
+    return the_id
 
+def get_fb_likes(page_id):
+    the_likes='None'
+    try:
+        data = get_page_data(page_id)
+        the_likes = str(data['likes'])
+    except Exception, e:
+        print e, 'Error in get_fb_likes'
+    return the_likes
 
 def get_likes(artists, worksheet, end):
     col = columns.fb_likes
-    cell_list_likes = worksheet.range(col+'3:'+col+end)
+    cell_list_likes = worksheet.range(col+'2:'+col+end)
     for n in xrange(len(artists)):
         try:
             page_id = get_page_id(artists[n])

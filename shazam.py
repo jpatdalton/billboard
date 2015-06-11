@@ -18,9 +18,9 @@ def shazam_search(titles, worksheet, indices, end):
     soup = BeautifulSoup(html)
 
     col = columns.shazams
-    cell_list_zams = worksheet.range(col+'3:'+col+end)
+    cell_list_zams = worksheet.range(col+'2:'+col+end)
     col = columns.shazam_chart_pos
-    cell_list_chart_pos = worksheet.range(col+'3:'+col+end)
+    cell_list_chart_pos = worksheet.range(col+'2:'+col+end)
     n=0
     driver = webdriver.Firefox()
     for ind in indices:
@@ -62,7 +62,21 @@ def shazam_search(titles, worksheet, indices, end):
         wkst.update_cells(cell_list_chart_pos)
     driver.close()
 
-
+def get_id(title):
+    the_id = ''
+    try:
+        driver = webdriver.Firefox()
+        driver.get("http://www.shazam.com/search/"+title)
+        time.sleep(2)
+        pat = driver.page_source
+        soup = BeautifulSoup(pat)
+        data = soup.find_all(href=re.compile("www.shazam.com/track/"))[0]["href"]
+        the_id = data.split('/')[4]
+    except Exception, e:
+        print e, 'Shazam ids - ', title
+    finally:
+        driver.close()
+    return the_id
 
 def scrape(title, driver):
 

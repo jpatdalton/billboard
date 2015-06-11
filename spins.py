@@ -25,15 +25,15 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
     col_spins_pos = columns.spins_pos
     col_spins_days = columns.spins_days
 
-    cell_list_spins = worksheet.range(col+'3:'+col+end)
-    cell_list_aud = worksheet.range(col_audience+'3:'+col_audience+end)
-    cell_list_spins_pos = worksheet.range(col_spins_pos+'3:'+col_spins_pos+end)
-    cell_list_spins_days = worksheet.range(col_spins_days+'3:'+col_spins_days+end)
+    cell_list_spins = worksheet.range(col+'2:'+col+end)
+    cell_list_aud = worksheet.range(col_audience+'2:'+col_audience+end)
+    cell_list_spins_pos = worksheet.range(col_spins_pos+'2:'+col_spins_pos+end)
+    cell_list_spins_days = worksheet.range(col_spins_days+'2:'+col_spins_days+end)
 
     col_spins_lw = columns.spins_last_week
     col_spins_diff = columns.spins_diff
-    cell_list_spins_lw = worksheet.range(col_spins_lw+'3:'+col_spins_lw+end)
-    cell_list_spins_diff = worksheet.range(col_spins_diff+'3:'+col_spins_diff+end)
+    cell_list_spins_lw = worksheet.range(col_spins_lw+'2:'+col_spins_lw+end)
+    cell_list_spins_diff = worksheet.range(col_spins_diff+'2:'+col_spins_diff+end)
 
 
     n=0

@@ -1,3 +1,13 @@
 pip install --upgrade google-api-python-client
-pip install facebook-sdk
+--pip install facebook-sdk
 pip install soundcloud
+pip install MySQL-python
+pip install sqlalchemy
+pip install pytesseract
+pip install Pillow
+apt-get install tesseract
+ pip install alembic
+
+import pytesseract
+from PIL import Image
+print(pytesseract.image_to_string(Image.open('/Users/jpatdalton/PycharmProjects/billboard/test1.png')))

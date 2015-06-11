@@ -26,7 +26,7 @@ def youtube_search(song_titles, worksheet, indices, end):
   # Call the search.list method to retrieve results matching the specified
   # query term.
   col = columns.youtube
-  cell_list_views = worksheet.range(col+'3:'+col+end)
+  cell_list_views = worksheet.range(col+'2:'+col+end)
   n=0
   for ind in indices:
     search_response = youtube.search().list(
@@ -47,6 +47,23 @@ def youtube_search(song_titles, worksheet, indices, end):
     n+=1
 
   worksheet.update_cells(cell_list_views)
+
+def get_id(title):
+    vid_id = 'None'
+    try:
+        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+                        developerKey=DEVELOPER_KEY)
+        search_response = youtube.search().list(
+            q=title,
+            part="id",
+            maxResults=1
+          ).execute()
+        search_result = search_response.get("items", [])[0]
+        vid_id = search_result["id"]["videoId"]
+
+    except Exception, e:
+        print 'Cant get Youtube Id for ' + title
+    return vid_id
 
 '''
 if __name__ == "__main__":
