@@ -37,7 +37,8 @@ def open_spreadsheet():
             break
         n+=1
     if index == -1:
-        worksheet_retrieved = wks.add_worksheet(title, 200, 25)
+        worksheet_retrieved = wks.add_worksheet(title, 200, 35)
+        add_column_headers(worksheet_retrieved)
         print 'added worksheet ', worksheet_retrieved.title
     else:
         worksheet_retrieved = wks.get_worksheet(index)
@@ -53,8 +54,9 @@ def clear_worksheet(worksheet):
     return new_worksheet
 
 def add_column_headers(worksheet):
-    cell_list = worksheet.range('A1:B1')
+    cell_list = worksheet.range('A1:AC1')
     for cell in cell_list:
+        #print cell.col
         cell.value = columns.headers[cell.col-1]
     worksheet.update_cells(cell_list)
 

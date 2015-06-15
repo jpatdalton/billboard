@@ -15,7 +15,10 @@ def get_user_data(id):
     try:
         user_endpoint = 'https://api.vineapp.com/users/profiles/' + str(id)
         data = requests.get(user_endpoint).json()["data"]
-        the_data = data['followerCount']
+        if data["verified"]:
+            the_data = data['followerCount']
+        else:
+            the_data = 'Not Verified'
     except Exception, e:
         print e, 'Vine get user data', id
     return the_data

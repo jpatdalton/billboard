@@ -57,7 +57,7 @@ def shazam_search(titles, worksheet, indices, end):
     except Exception, e:
         print e, 'SHAZAM'
         # many exceptions result from an closed connection 'bad status line', try again
-        wkst = oauth.open_worksheet()
+        wkst = oauth.open_spreadsheet()
         wkst.update_cells(cell_list_zams)
         wkst.update_cells(cell_list_chart_pos)
     driver.close()

@@ -17,6 +17,7 @@ import columns
 import logging
 import db_setup
 import itunes
+import billboard_biz
 from my_models import Artist, Track
 from sqlalchemy.sql import exists
 
@@ -138,10 +139,11 @@ def put_titles(titles, movements, worksheet, indices, end):
 
 
 def run_the_jewels():
-    session = db_setup.get_session()
+    #session = db_setup.get_session()
 
-    #worksheet = oauth.open_spreadsheet()
+    worksheet = oauth.open_spreadsheet()
     artists, titles, indices = get_top100()
+    '''
     #ARTIST STUFF
 
     try:
@@ -157,16 +159,7 @@ def run_the_jewels():
         session.rollback()
         print e
 
-    '''
-    #myfacebook.get_likes(artists, worksheet, end)
-    #instagram.get_instas(artists, worksheet, end)
-    #mytwitter.get_twitter_stats(artists, worksheet, end)
-    #vine.get_vine_stats(artists, worksheet, end)
-    #sc.get_followers(artists, worksheet, end)
-    '''
-
-
-    ''' TRACK STUFF
+     TRACK STUFF
     try:
         validate_tracks(titles, session)
         session.commit()
@@ -175,24 +168,25 @@ def run_the_jewels():
         print e
 
     '''
-    '''
-    #movements = get_movements()
+    movements = get_movements()
     num = len(artists)
     end = str(2+num)
+    #billboard_biz.get_details(worksheet, indices, end)
     #put_titles(titles, movements, worksheet, indices, end)
     #put_artists(artists, worksheet, indices)
     #spins.get_spins(artists, titles, worksheet, indices, end)
-    itunes.itunes_search(titles, worksheet, indices, end)
+    #itunes.itunes_search(titles, worksheet, indices, end)
     #youtube.youtube_search(titles, worksheet, indices, end)
     #spotify.spotify_search(titles, worksheet, indices, end)
     shazam.shazam_search(titles, worksheet, indices, end)
-    '''
-    session.close()
 
+    myfacebook.get_likes(artists, worksheet, end)
+    instagram.get_instas(artists, worksheet, end)
+    mytwitter.get_twitter_stats(artists, worksheet, end)
+    vine.get_vine_stats(artists, worksheet, end)
+    sc.get_followers(artists, worksheet, end)
 
-def populate_spreadsheet():
-    {}
-
+    #session.close()
 
 def update_artists(session):
     artists = session.query(Artist).all()
