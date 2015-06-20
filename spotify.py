@@ -2,6 +2,7 @@ __author__ = 'jpatdalton'
 
 import spotipy
 import columns
+import requests
 import pytesseract
 from PIL import Image
 
@@ -25,6 +26,16 @@ def get_id(title):
     except Exception, e:
         print e, 'Cant get Spotify id = ' + title
     return the_id
+
+def get_popularity(id):
+    popularity = -1
+    try:
+        url = 'https://api.spotify.com/v1/tracks/' + id
+        data = requests.get(url).json()
+        popularity = data["popularity"]
+    except Exception, e:
+        print e, 'Cant get Spotify id1 = ' + id
+    return popularity
 
 def get_streams():
     print(pytesseract.image_to_string(Image.open('/Users/jpatdalton/PycharmProjects/billboard/test1.png')))

@@ -3,6 +3,7 @@ __author__ = 'jpatdalton'
 import urllib2
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import time
 import columns
 
@@ -56,3 +57,45 @@ def get_details(worksheet, indices, end):
     worksheet.update_cells(cell_list_writers)
     worksheet.update_cells(cell_list_producers)
     worksheet.update_cells(cell_list_labels)
+
+def get_writers_producers_labels():
+    driver = webdriver.Firefox()
+    url = 'http://www.billboard.com/biz/charts/the-billboard-hot-100'
+    driver.get(url)
+    time.sleep(11)
+    login = driver.find_element_by_link_text('Log In')
+    login.click()
+    time.sleep(5)
+    name = driver.find_element_by_id('edit-name')
+    name.send_keys('steve@zeitlosent.com')
+    time.sleep(1)
+    password = driver.find_element_by_id('edit-pass')
+    password.send_keys('steve')
+    time.sleep(1)
+    password.send_keys(Keys.ENTER)
+    time.sleep(11)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(4)
+    html = driver.page_source
+    soup = BeautifulSoup(html)
+    driver.close()
+    titles = soup.select(".details")
+    writers = list()
+    producers = list()
+    labels = list()
+    n=0
+    for title in titles:
+        try:
+            arr = title.get_text().split('\n')
+            text = arr[len(arr)-2].strip()
+            text1 = text.split('(')
+            producers.append(text1[0].strip())
+            text2 = text1[1].split(')')
+            writers.append(text2[0])
+            text3 = text2[1].split()
+            labels.append(' '.join(text3))
+        except Exception, e:
+            print e, 'Billboard Biz'
+        n+=1
+    print len(writers), len(producers), len(labels)
+    return writers, producers, labels

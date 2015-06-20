@@ -6,13 +6,55 @@ import re
 import columns
 from datetime import date
 import datetime
+from my_models import Track
+
+today = date.today()
+yesterday = date.today() - datetime.timedelta(days = 1)
+week_ago = date.today() - datetime.timedelta(days = 7)
+fd = week_ago.strftime("%Y%m%d")
+td = today.strftime("%Y%m%d")
+yd = yesterday.strftime("%Y%m%d")
+
+url_spins = 'http://kworb.net/radio/'
+response = urllib2.urlopen(url_spins)
+html = response.read()
+pop_soup = BeautifulSoup(html)
+
+url_spins = 'http://kworb.net/airadio/'
+response = urllib2.urlopen(url_spins)
+html = response.read()
+soup = BeautifulSoup(html)
+try:
+    url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    urban_soup = BeautifulSoup(html)
+except Exception, e:
+    print e, 'Couldnt get archived spins'
+    td = yd
+    url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    urban_soup = BeautifulSoup(html)
+
+url_spins = 'http://kworb.net/radio/rhythmic/archives/' + td + '.html'
+response = urllib2.urlopen(url_spins)
+html = response.read()
+rhythmic_soup = BeautifulSoup(html)
+
+url_spins = 'http://kworb.net/airadio/archives/' + fd + '.html'
+response = urllib2.urlopen(url_spins)
+html = response.read()
+soup_lw = BeautifulSoup(html)
 
 def get_spins(main_artists, song_titles, worksheet, indices, end):
+    '''
     today = date.today()
     yesterday = date.today() - datetime.timedelta(days = 1)
     week_ago = date.today() - datetime.timedelta(days = 7)
     fd = week_ago.strftime("%Y%m%d")
     td = today.strftime("%Y%m%d")
+    yd = yesterday.strftime("%Y%m%d")
 
     url_spins = 'http://kworb.net/radio/'
     response = urllib2.urlopen(url_spins)
@@ -23,11 +65,18 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
     response = urllib2.urlopen(url_spins)
     html = response.read()
     soup = BeautifulSoup(html)
-
-    url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
-    response = urllib2.urlopen(url_spins)
-    html = response.read()
-    urban_soup = BeautifulSoup(html)
+    try:
+        url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+        response = urllib2.urlopen(url_spins)
+        html = response.read()
+        urban_soup = BeautifulSoup(html)
+    except Exception, e:
+        print e, 'Couldnt get archived spins'
+        td = yd
+        url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+        response = urllib2.urlopen(url_spins)
+        html = response.read()
+        urban_soup = BeautifulSoup(html)
 
     url_spins = 'http://kworb.net/radio/rhythmic/archives/' + td + '.html'
     response = urllib2.urlopen(url_spins)
@@ -38,7 +87,7 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
     response = urllib2.urlopen(url_spins)
     html = response.read()
     soup_lw = BeautifulSoup(html)
-
+    '''
     col = columns.spins
     col_audience = columns.audience
     col_spins_pos = columns.spins_pos
@@ -142,3 +191,99 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
     worksheet.update_cells(cell_list_urban)
     worksheet.update_cells(cell_list_itunes)
 
+#def get_soups():
+
+    #return pop_soup, soup, urban_soup, rhythmic_soup, soup_lw
+
+def find_in_soup(title):
+    results = [None] * 11
+    current_song = title
+    try:
+        ind = soup.find(text = re.compile(current_song+"*")).parent.parent.parent
+
+        #print str(len(ind)) + ' - [' + current_song + ']'
+        indx = ind.find_all("td")
+
+        spins = indx[6].get_text()
+
+        results[0] = indx[0].get_text()
+        results[1] = spins
+        results[10] = indx[4].get_text()
+
+        results[9] = indx[8].get_text()
+
+        ind_lw = soup_lw.find(text = re.compile(current_song+"*")).parent.parent.parent
+
+        indx_lw = ind_lw.find_all("td")
+        spins_lw = indx_lw[6].get_text()
+        results[2] = spins_lw
+        diff = int(spins) - int(spins_lw)
+        #if diff > 0:
+            #diff = "'+" + str(diff)
+        results[3] = diff
+
+        try:
+            ind_pop = pop_soup.find(text = re.compile(current_song+"*")).parent.parent.parent
+            indx_pop = ind_pop.find_all("td")
+            results[4] = indx_pop[0].get_text()
+            results[5] = indx_pop[4].get_text()
+            results[8] = indx_pop[10].get_text()
+        except Exception, e:
+            {}
+            #print e, 'pop'
+        try:
+            ind_urban = urban_soup.find(text = re.compile(current_song+"*")).parent.parent.parent
+            indx_urban = ind_urban.find_all("td")
+            results[7] = indx_urban[4].get_text()
+        except Exception, e:
+            {}
+            #print e, 'urban'
+        try:
+            ind_rhythmic = rhythmic_soup.find(text = re.compile(current_song+"*")).parent.parent.parent
+            indx_rhythmic = ind_rhythmic.find_all("td")
+            results[6] = indx_rhythmic[4].get_text()
+        except Exception, e:
+            {}
+            #print e, 'rhythmic'
+
+        found = 0
+    except Exception, e:
+        print e, ' [' + current_song + '] FIXME $$$'
+
+    return results
+
+def update_tracks(track_ids, session):
+    for track_id in track_ids:
+        track = session.query(Track).get(track_id.id)
+        if track.spins_id is not None:
+            title = track.spins_id
+        else:
+            title = track.title
+        spins_results = find_in_soup(title)
+        if len(spins_results) is not 0:
+            if spins_results[0] is not None:
+                track.radio_position = int(spins_results[0])
+            if spins_results[1] is not None:
+                track.spins = int(spins_results[1])
+            if spins_results[2] is not None:
+                track.spins_lw = int(spins_results[2])
+            if spins_results[3] is not None:
+                track.spins_diff = int(spins_results[3])
+            if spins_results[4] is not None:
+                track.spins_pop_pos = str(spins_results[4])
+            if spins_results[5] is not None:
+                track.spins_pop = str(spins_results[5])
+            if spins_results[6] is not None:
+                track.spins_rhythmic = str(spins_results[6])
+            if spins_results[7] is not None:
+                track.spins_urban = str(spins_results[7])
+            if spins_results[8] is not None:
+                track.radio_days = int(spins_results[8])
+            if spins_results[9] is not None:
+                track.itunes_chart_pos = str(spins_results[9])
+            if spins_results[10] is not None:
+                track.radio_audience = spins_results[10]
+            track.days_from_release = track.days_from_release + 1
+            session.add(track)
+
+    #return radio_position, spins, spins_lw, spins_diff, spins_pop_pos, spins_pop, spins_rhythmic, spins_urban, radio_days, itunes_chart_pos

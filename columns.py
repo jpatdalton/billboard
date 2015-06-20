@@ -38,26 +38,34 @@ headers = [
     "Writers",
     "Producers",
     "Label",
-    "Itunes Chart Position",
-    "Days Since Release",
-    "Radio Position",
-    "Overall Radio Spins",
-    "Overall Spins Last Week",
-    "Spins Difference",
-    "Pop Position",
-    "Pop Spins",
-    "Rhythmic Spins",
-    "Urban Spins",
-    "Radio Days (Pop)",
-    "Audience (Millions)",
-    "Youtube Views",
-    "Spotify Popularity",
+    "Itunes Chart Position", #
+    "Days Since Release", #
+    "Radio Position", #
+    "Overall Radio Spins", #
+    "Overall Spins Last Week", #
+    "Spins Difference", #
+    "Pop Position", #
+    "Pop Spins", #
+    "Rhythmic Spins", #
+    "Urban Spins", #
+    "Radio Days (Pop)", #
+    "Audience (Millions)", #
+    "Youtube Views", #
+    "Spotify Popularity", #
     "Spotify Streams",
-    "Shazams",
-    "Shazam Chart Position",
-    "Facebook Likes",
-    "Instagram Followers",
-    "Twitter Followers",
-    "Soundcloud Followers",
-    "Vine Followers"
+    "Shazams", #
+    "Shazam Chart Position", #
+    "Facebook Likes", #
+    "Instagram Followers", #
+    "Twitter Followers", #
+    "Soundcloud Followers", #
+    "Vine Followers" #
 ]
+
+'''import db_setup
+from my_models import Artist, Track, Current_Spreadsheet
+from sqlalchemy.sql import exists, text
+session = db_setup.get_session()
+query = session.query(Track).filter(Track.title == 'See You Again').all()
+session.close()
+'''

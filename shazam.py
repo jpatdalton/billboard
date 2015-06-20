@@ -63,7 +63,7 @@ def shazam_search(titles, worksheet, indices, end):
     driver.close()
 
 def get_id(title):
-    the_id = ''
+    the_id = 'None'
     try:
         driver = webdriver.Firefox()
         driver.get("http://www.shazam.com/search/"+title)
@@ -101,5 +101,21 @@ def lookup_zams(link):
     data1 = soup.select(".trd-tag-count")[0].span.text
     return data1
 
-
-
+def get_shazam_stats(id):
+    rank = 0
+    zams = 0
+    url = ''
+    try:
+        url = 'http://www.shazam.com/track/' + id
+        response = urllib2.urlopen(url)
+        html = response.read()
+        soup = BeautifulSoup(html)
+        zams = soup.select(".trd-tag-count")[0].span.text
+        zams = int(zams.replace(',', ''))
+        rankz = soup.find_all("h2")
+        if len(rankz) > 1:
+            the_rank = rankz[1].text
+            rank = int(the_rank.replace("#", ""))
+    except Exception, e:
+        print e, 'Shazam stats - ', url
+    return zams, rank

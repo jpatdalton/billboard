@@ -45,7 +45,7 @@ def get_page_id(name):
     return the_id
 
 def get_fb_likes(page_id):
-    the_likes='None'
+    the_likes=0
     try:
         data = get_page_data(page_id)
         the_likes = str(data['likes'])

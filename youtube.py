@@ -41,18 +41,36 @@ def youtube_search(song_titles, worksheet, indices, end):
     # Call the videos.list method to retrieve location details for each video.
     video_response = youtube.videos().list(
       id=vid_id,
-      part='statistics'
+      part='statistics',
+      maxResults=1
     ).execute()
     cell_list_views[ind].value = video_response["items"][0]["statistics"]["viewCount"]
     n+=1
 
   worksheet.update_cells(cell_list_views)
 
+
+youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+                  developerKey=DEVELOPER_KEY)
+
+def get_views(vid_id):
+    views = 0
+    try:
+        video_response = youtube.videos().list(
+              id=vid_id,
+              part='statistics',
+              maxResults=1
+            ).execute()
+        views = video_response["items"][0]["statistics"]["viewCount"]
+    except Exception, e:
+        print e, 'Youtube Get Views', vid_id
+    return views
+
 def get_id(title):
     vid_id = 'None'
     try:
-        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-                        developerKey=DEVELOPER_KEY)
+        #youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+        #                developerKey=DEVELOPER_KEY)
         search_response = youtube.search().list(
             q=title,
             part="id",

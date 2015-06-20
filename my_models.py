@@ -33,8 +33,18 @@ class Track(Base):
     chart_movement = Column(String(3))
     title = Column(String(45))
     alt_title = Column(String(45))
-    spins_lw = Column(Integer)
+    writers = Column(String(250))
+    producers = Column(String(100))
+    label = Column(String(80))
     radio_position = Column(Integer)
+    spins_id = Column(String(30))
+    spins = Column(Integer)
+    spins_lw = Column(Integer)
+    spins_diff = Column(Integer)
+    spins_pop_pos = Column(String(3))
+    spins_pop = Column(String(8))
+    spins_rhythmic = Column(String(8))
+    spins_urban = Column(String(8))
     radio_days = Column(Integer)
     radio_audience = Column(Integer)
     days_from_release = Column(Integer)
@@ -43,18 +53,23 @@ class Track(Base):
     spotify_id = Column(String(30))
     spotify_popularity = Column(Integer)
     spotify_streams = Column(Integer)
-    shazam_id = Column(Integer)
+    shazam_id = Column(String(20))
     shazams = Column(Integer)
     shazam_chart_pos = Column(Integer)
-    itunes_id = Column(Integer)
+    itunes_id = Column(String(20))
     itunes_release_date = Column(DateTime)
+    itunes_chart_pos = Column(String(7))
 
     artists = relationship('Artist', secondary=track_artists,
                             backref=backref('tracks', lazy='dynamic'))
 
+class Current_Spreadsheet(Base):
+    __tablename__ = 'current_spreadsheet'
+    id = Column('track_id', Integer, ForeignKey('track.id'), primary_key=True)
+
 class Artist(Base):
     __tablename__ = 'artist'
-    id =  Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     updated_at = Column(DateTime, default=datetime.datetime.now(), onupdate=datetime.datetime.now)
     created_at = Column(DateTime, default=datetime.datetime.now())
     name = Column(String(45), unique=True)
