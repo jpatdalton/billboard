@@ -66,6 +66,7 @@ class Track(Base):
 class Current_Spreadsheet(Base):
     __tablename__ = 'current_spreadsheet'
     id = Column('track_id', Integer, ForeignKey('track.id'), primary_key=True)
+    indice = Column(Integer)
 
 class Artist(Base):
     __tablename__ = 'artist'

@@ -20,7 +20,7 @@ import itunes
 import billboard_biz
 import drive_sheet
 from my_models import Artist, Track, Current_Spreadsheet
-from sqlalchemy.sql import exists, text
+from sqlalchemy.sql import exists, text, func
 
 def get_top100():
 
@@ -179,11 +179,14 @@ def run_the_jewels():
 
     worksheet = oauth.open_spreadsheet()
 
-    make_spreadsheet(session, worksheet)
-
+    #drive_sheet.update_weekly(session, worksheet)
+    drive_sheet.update_daily(session, worksheet)
+    #drive_sheet.update_artists(session, worksheet)
+    #artists, titles, indices = get_top100()
+    #movements = get_movements()
     #ARTIST STUFF
     '''
-    #artists, titles, indices = get_top100()
+    artists, titles, indices = get_top100()
     try:
         validate_artists(artists, session)
         session.commit()
@@ -210,7 +213,7 @@ def run_the_jewels():
     '''
     try:
         # updates table 'current spreadsheet' with ids of the week's tracks
-        populate_current_spreadsheet(titles, session)
+        populate_current_spreadsheet(titles, movements, indices, session)
         session.commit()
     except Exception, e:
         session.rollback()
@@ -287,8 +290,6 @@ def update_tracks_daily(session):
     session.add(track)
     '''
 
-
-
 def update_tracks_weekly(session):
     artists, titles, indices = get_top100()
     #ARTIST STUFF
@@ -319,29 +320,35 @@ def update_tracks_weekly(session):
     try:
         # updates table 'current spreadsheet' with ids of the week's tracks
         # puts chart position and movements for all current tracks
-        populate_current_spreadsheet(titles, movements, session)
+        populate_current_spreadsheet(titles, movements, indices, session)
         session.commit()
     except Exception, e:
         session.rollback()
         print e, '123'
 
 
-def update_artists(session):
-    artists = session.query(Artist).all()
-    for artist in artists:
-        print artist.name
-        if artist.fb_id != ('None' or None):
-            artist.fb_likes = myfacebook.get_fb_likes(artist.fb_id)
-        if artist.instagram_id != ('None' or None):
-            artist.instagram = instagram.get_followers(artist.instagram_id)
-        if artist.twitter_id != ('None' or None):
-            artist.twitter = mytwitter.get_followers(artist.twitter_id) #verified support
-        if artist.vine_id != ('None' or None):
-            print artist.vine_id
-            artist.vine = vine.get_user_data(artist.vine_id) #verified support
-        if artist.soundcloud_id is not ('None' or None):
-            artist.soundcloud = sc.get_num_followers(artist.soundcloud_id)
-        session.add(artist)
+def update_artists():
+    session = db_setup.get_session()
+    try:
+        artists = session.query(Artist).all()
+        for artist in artists:
+            print artist.name
+            if artist.fb_id != ('None' or None):
+                artist.fb_likes = myfacebook.get_fb_likes(artist.fb_id)
+            if artist.instagram_id != ('None' or None):
+                artist.instagram = instagram.get_followers(artist.instagram_id)
+            if artist.twitter_id != ('None' or None):
+                artist.twitter = mytwitter.get_followers(artist.twitter_id) #verified support
+            if artist.vine_id != ('None' or None):
+                print artist.vine_id
+                artist.vine = vine.get_user_data(artist.vine_id) #verified support
+            if artist.soundcloud_id is not ('None' or None):
+                artist.soundcloud = sc.get_num_followers(artist.soundcloud_id)
+            session.add(artist)
+    except Exception, e:
+        session.rollback()
+        print e, '122'
+    session.close()
 
 def get_artists_ids(name):
     fb_id = myfacebook.get_page_id(name)
@@ -362,14 +369,14 @@ def get_release_dates(titles, worksheet, indices, end, session):
         n+=1
     worksheet.update_cells(cell_list_dates)
 
-def populate_current_spreadsheet(titles, movements, session):
+def populate_current_spreadsheet(titles, movements, indices, session):
     session.execute(text('TRUNCATE table current_spreadsheet'))
     n = 1
     for title in titles:
         results = session.query(Track).filter(Track.title == title).all()
         if len(results) == 1:
             track = results[0]
-            session.add(Current_Spreadsheet(id = track.id))
+            session.add(Current_Spreadsheet(id = track.id, indice = indices[n-1]))
             track.chart_position = n
             track.chart_movement = movements[n-1]
             session.add(track)
@@ -379,21 +386,6 @@ def populate_current_spreadsheet(titles, movements, session):
             print 'NO TRACK, FIXME $$$'
         n += 1
 
-'''
-            populated_track = results[0]
-            if n == 99:
-                next_ind = len(artists)
-            else:
-                next_ind = indices[n+1]
-            for i in xrange(next_ind - indices[n]):
-                try:
-                    the_artist = session.query(Artist).filter(Artist.name == artists[indices[n]+i]).all()
-                    artist = the_artist[0]
-                    populated_track.artists.append(artist)
-                except Exception, e:
-                    print e, 'No artist for the track! -', title
-            session.add(populated_track)
-'''
 def do_days_from_release(session):
     tracks = session.query(Track).all()
     for track in tracks:
@@ -409,7 +401,7 @@ billboard_top100.run_the_jewels()
 
 import db_setup
 from my_models import Artist, Track, Current_Spreadsheet
-from sqlalchemy.sql import exists, text
+from sqlalchemy.sql import exists, text, func
 session = db_setup.get_session()
 
 query = session.query(Track).filter(Track.title == 'Nasty Freestyle').all()
@@ -421,27 +413,6 @@ import billboard_biz
 billboard_biz.get_writers_producers_labels()
 
 
-from bs4 import BeautifulSoup
-from selenium import webdriver
-import time
-from selenium.webdriver.common.keys import Keys
-
-driver = webdriver.Firefox()
-url = 'http://www.billboard.com/biz/charts/the-billboard-hot-100'
-driver.get(url)
-time.sleep(11)
-login = driver.find_element_by_link_text('Log In')
-login.click()
-time.sleep(2)
-name = driver.find_element_by_id('edit-name')
-name.send_keys('steve@zeitlosent.com')
-time.sleep(1)
-password = driver.find_element_by_id('edit-pass')
-password.send_keys('steve')
-time.sleep(1)
-password.send_keys(Keys.ENTER)
-login = driver.find_element_by_id('edit-submit--3')
-login.submit()
 
 '''
 
