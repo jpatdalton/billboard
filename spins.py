@@ -8,6 +8,15 @@ from datetime import date
 import datetime
 from my_models import Track
 
+'''
+pat = driver.page_source
+driver.get(url_spins)
+url_spins = 'https://play.spotify.com/artist/137W8MRPWKqSmrBGDBFSop'
+response = urllib2.urlopen(url_spins)
+html = response.read()
+pop_soup = BeautifulSoup(html)
+'''
+
 today = date.today()
 yesterday = date.today() - datetime.timedelta(days = 1)
 week_ago = date.today() - datetime.timedelta(days = 7)
@@ -263,27 +272,49 @@ def update_tracks(track_ids, session):
         if len(spins_results) is not 0:
             if spins_results[0] is not None:
                 track.radio_position = int(spins_results[0])
+            else:
+                track.radio_position = 0
             if spins_results[1] is not None:
                 track.spins = int(spins_results[1])
+            else:
+                track.spins = 0
             if spins_results[2] is not None:
                 track.spins_lw = int(spins_results[2])
+            else:
+                track.spins_lw = 0
             if spins_results[3] is not None:
                 track.spins_diff = int(spins_results[3])
+            else:
+                track.spins_diff = 0
             if spins_results[4] is not None:
                 track.spins_pop_pos = str(spins_results[4])
+            else:
+                track.spins_pop_pos = '--'
             if spins_results[5] is not None:
                 track.spins_pop = str(spins_results[5])
+            else:
+                track.spins_pop = '--'
             if spins_results[6] is not None:
                 track.spins_rhythmic = str(spins_results[6])
+            else:
+                track.spins_rhythmic = '--'
             if spins_results[7] is not None:
                 track.spins_urban = str(spins_results[7])
+            else:
+                track.spins_urban = '--'
             if spins_results[8] is not None:
                 track.radio_days = int(spins_results[8])
+            else:
+                track.radio_days = 0
             if spins_results[9] is not None:
                 track.itunes_chart_pos = str(spins_results[9])
+            else:
+                track.itunes_chart_pos = '--'
             if spins_results[10] is not None:
                 track.radio_audience = spins_results[10]
-            track.days_from_release = track.days_from_release + 1
+            else:
+                track.radio_audience = 0
+            #track.days_from_release = track.days_from_release + 1
             session.add(track)
 
     #return radio_position, spins, spins_lw, spins_diff, spins_pop_pos, spins_pop, spins_rhythmic, spins_urban, radio_days, itunes_chart_pos

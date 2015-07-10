@@ -65,3 +65,11 @@ def get_id(name):
     except Exception, e:
         print e, 'Cant get Twitter id for: ' + name
     return the_id
+
+'''
+result = api.GetUsersSearch("HIBtheBomb",1,1)
+result[0].name
+user_id = result[0].id
+user = api.GetUser(user_id)
+user.followers_count
+'''

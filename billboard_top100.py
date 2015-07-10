@@ -19,8 +19,18 @@ import db_setup
 import itunes
 import billboard_biz
 import drive_sheet
+import sys
+import datetime
 from my_models import Artist, Track, Current_Spreadsheet
 from sqlalchemy.sql import exists, text, func
+import smtplib
+from email.mime.text import MIMEText
+
+email = 'steve@unrestricted.co; patrick@theflowtilla.com'
+today = datetime.datetime.today()
+td = today.strftime("%m-%d-%y")
+artists_file = 'new_artists_' + td + '.txt'
+tracks_file = 'new_tracks_' + td + '.txt'
 
 def get_top100():
 
@@ -46,11 +56,22 @@ def get_top100():
             refined_name1 = refined_name.split('&')
             if len(refined_name1) > 1:
                 refined_name2 = refined_name1[0].split(',')
+                #refined_name3 = [i.split('With') for i in refined_name2]
+                '''
+                refined_name2 = [i.split(',') for i in refined_name1]
+                refined_name2 = [j for i in refined_name2 for j in i]
+                refined_name3 = [i.split('With') for i in refined_name2]
+                refined_name4 = [j for i in refined_name3 for j in i]
+                '''
                 for n in refined_name2:
                     count+=1
                     main_artists.append(n.strip())
-                count+=1
-                main_artists.append(refined_name1[1].strip())
+                #count+=1
+                refined_name3 = refined_name1[1].split('With')
+                for n in refined_name3:
+                    count+=1
+                    main_artists.append(n.strip())
+                #main_artists.append(refined_name1[1].strip())
             else:
                 refined_name2 = refined_name1[0].split('With')
                 for n in refined_name2:
@@ -58,20 +79,45 @@ def get_top100():
                     main_artists.append(n.strip())
         indices.append(total)
         total+=count
-
+    print main_artists
+    print indices
     for r in main_artists:
         logging.info('Refined name - ['+ str(r)+']')
     return main_artists, song_titles, indices
 
-def validate_artists(artists, session):
+def validate_artist(art_name, session):
 
-    for art_name in artists:
-        stmt = exists().where(Artist.name == art_name)
-        query = session.query(Artist).filter(stmt)
-        if len(query.all()) is 0:
-            fb_id, insta_id, twitter_id, vine_id, sc_id = get_artists_ids(art_name)
-            session.add(Artist(name=art_name, fb_id=fb_id, instagram_id=insta_id, twitter_id=twitter_id, vine_id=vine_id, soundcloud_id=sc_id))
-    print 'NEW ARTISTS: ', session.new
+    query = session.query(Artist).filter(Artist.name == art_name).all()
+    if len(query) is 0:
+        fb_id, insta_id, twitter_id, vine_id, sc_id = get_artists_ids(art_name)
+        art = Artist(name=art_name, fb_id=fb_id, instagram_id=insta_id, twitter_id=twitter_id, vine_id=vine_id, soundcloud_id=sc_id)
+        session.add(art)
+        session.commit()
+        print 'Made new artist - ' + art_name
+        try:
+            f = open(artists_file, 'a')
+            f.write(art_name + '\n')
+            if fb_id != 'None':
+                f.writelines('Facebook: https://www.facebook.com/profile.php?id=' + str(fb_id) + '\n')
+            if insta_id != 'None':
+                uname = instagram.get_username(insta_id)
+                f.write('Instagram: https://instagram.com/' + uname  + '\n')
+            if twitter_id != 'None':
+                f.write('Twitter: https://twitter.com/intent/user?user_id=' + str(twitter_id) + '\n')
+            if vine_id != 'None':
+                f.write('Vine: https://vine.co/u/' + str(vine_id) + '\n')
+            if sc_id != 'None':
+                url = sc.get_page(sc_id)
+                f.write('Soundcloud: ' + url + '\n')
+            f.write('\n\n')
+            f.close()
+        except Exception, e:
+            print e
+
+        return art
+    return query[0]
+
+
 
 def validate_tracks(tracks, artists, writers, producers, labels, indices, session):
     n = 0
@@ -95,18 +141,33 @@ def validate_tracks(tracks, artists, writers, producers, labels, indices, sessio
                 next_ind = indices[n+1]
             for i in xrange(next_ind - indices[n]):
                 try:
-                    the_artist = session.query(Artist).filter(Artist.name == artists[indices[n]+i]).all()
-                    artist = the_artist[0]
-                    populated_track.artists.append(artist)
                     populated_track.writers = writers[n]
                     populated_track.producers = producers[n]
                     populated_track.labels = labels[n]
                 except Exception, e:
-                    print e, 'No artist for the track! -', title
+                    print 'Trouble with writers, producers, labels'
+                try:
+                    the_artist = validate_artist(artists[indices[n]+i], session)
+                    populated_track.artists.append(the_artist)
+                except Exception, e:
+                    print e, 'Problem appending artists to track - ', title
             session.add(populated_track)
+            session.commit()
+            add_new_track(populated_track)
         else:
             print 'This track has multiple results uh oh! FIXME $$$ - ' + title
         n+=1
+
+def add_new_track(track):
+    try:
+        f = open(tracks_file, 'a')
+        f.write(track.title + '\n')
+        if track.shazam_id != 'None':
+            f.write('Shazam: http://www.shazam.com/track/' + str(track.shazam_id) + '\n')
+        f.write('\n\n')
+    finally:
+        f.close()
+
 
 def populate_track_info(track):
     try:
@@ -143,36 +204,6 @@ def get_movements():
         n+=1
     return movements
 
-def put_artists(artists, worksheet, indices):
-    end = 2+len(artists)
-    col = columns.artists
-    cell_list_artists = worksheet.range(col+'2:'+col+str(end))
-
-    for n in xrange(len(artists)):
-        cell_list_artists[n].value = artists[n]
-
-    worksheet.update_cells(cell_list_artists)
-
-def put_titles(titles, movements, worksheet, indices, end):
-    # Select a range
-    col = columns.song_title
-    cell_list_titles = worksheet.range(col+'2:'+col+str(end))
-    col = columns.chart_position
-    cell_list_nums = worksheet.range(col+'2:'+col+str(end))
-    col = columns.chart_movement
-    cell_list_chart_movement = worksheet.range(col+'2:'+col+str(end))
-    n=0
-    for ind in indices:
-        cell_list_titles[ind].value = titles[n]
-        cell_list_chart_movement[ind].value = movements[n]
-        cell_list_nums[ind].value = n+1
-        n+=1
-
-    # Update in batch
-    worksheet.update_cells(cell_list_nums)
-    worksheet.update_cells(cell_list_titles)
-    worksheet.update_cells(cell_list_chart_movement)
-
 
 def run_the_jewels():
     session = db_setup.get_session()
@@ -185,64 +216,7 @@ def run_the_jewels():
     #artists, titles, indices = get_top100()
     #movements = get_movements()
     #ARTIST STUFF
-    '''
-    artists, titles, indices = get_top100()
-    try:
-        validate_artists(artists, session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '120'
-    '''
-    '''
-    try:
-        update_artists(session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '121'
 
-     #TRACK STUFF
-    try:
-        validate_tracks(titles, artists, indices, session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '122'
-    '''
-    '''
-    try:
-        # updates table 'current spreadsheet' with ids of the week's tracks
-        populate_current_spreadsheet(titles, movements, indices, session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '123'
-    '''
-    '''
-    try:
-        update_tracks_hourly(session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e
-    '''
-
-    '''
-    try:
-        update_tracks_daily(session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e
-
-    try:
-        update_tracks_weekly(session)
-    except Exception, e:
-        session.rollback()
-        print e
-
-    '''
     #movements = get_movements()
     #num = len(artists)
     #end = str(2+num)
@@ -263,26 +237,38 @@ def run_the_jewels():
 
     session.close()
 
-def update_tracks_hourly(session):
-    track_ids = session.query(Current_Spreadsheet).all()
-    for track_id in track_ids:
-        track = session.query(Track).get(track_id.id)
-        if track.youtube_id != ('None' or None):
-            track.youtube_views = youtube.get_views(track.youtube_id)
-        if track.shazam_id != ('None' or None):
-            track.shazams, track.shazam_chart_pos = shazam.get_shazam_stats(track.shazam_id) #verified support
-        if track.spotify_id != ('None' or None):
-            track.spotify_popularity = spotify.get_popularity(track.spotify_id)
-        session.add(track)
-
-def update_tracks_daily(session):
-    track_ids = session.query(Current_Spreadsheet).all()
+def update_tracks_hourly():
+    session = db_setup.get_session()
     try:
+        track_ids = session.query(Current_Spreadsheet).all()
+        for track_id in track_ids:
+            track = session.query(Track).get(track_id.id)
+            '''
+            if track.youtube_id != ('None' or None):
+                track.youtube_views = youtube.get_views(track.youtube_id)
+            '''
+            if track.shazam_id != ('None' or None):
+                track.shazams, track.shazam_chart_pos = shazam.get_shazam_stats(track.shazam_id) #verified support
+            '''if track.spotify_id != ('None' or None):
+                track.spotify_popularity = spotify.get_popularity(track.spotify_id)
+            '''
+            session.add(track)
+        session.commit()
+    except Exception, e:
+        session.rollback()
+        print e, '119'
+    session.close()
+
+def update_tracks_daily():
+    session = db_setup.get_session()
+    try:
+        track_ids = session.query(Current_Spreadsheet).all()
         spins.update_tracks(track_ids, session)
         session.commit()
     except Exception, e:
         session.rollback()
         print e, 'Couldnt update SPINS $$$'
+    session.close()
     '''
     tracks = session.query(Track).all()
     for track in tracks:
@@ -290,41 +276,51 @@ def update_tracks_daily(session):
     session.add(track)
     '''
 
-def update_tracks_weekly(session):
-    artists, titles, indices = get_top100()
-    #ARTIST STUFF
-    '''
+def update_tracks_weekly():
+    session = db_setup.get_session()
     try:
-        validate_artists(artists, session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '120'
-    '''
-     #TRACK STUFF
-    writers, producers, labels = billboard_biz.get_writers_producers_labels()
-    if not(len(writers) == len(producers) == len(labels) == 100):
-        print 'couldnt get writers, producers, or labels!!! $$$ FIXME'
-        raise Exception
+        artists, titles, indices = get_top100()
+        '''
+        #ARTIST STUFF
+        #TODO: only validate the artists from tracks
+        try:
+            validate_artists(artists, session)
+            session.commit()
+        except Exception, e:
+            session.rollback()
+            print e, '120'
+        '''
+         #TRACK STUFF
+        writers, producers, labels = billboard_biz.get_writers_producers_labels()
+        if not(len(writers) == len(producers) == len(labels) == 100):
+            print 'couldnt get writers, producers, or labels!!! $$$ FIXME'
+            raise Exception
 
 
-     #TRACK STUFF
-    try:
-        # used to populate track billboard info
-        validate_tracks(titles, artists, writers, producers, labels, indices, session)
+         #TRACK STUFF
+        try:
+            # used to populate track billboard info
+            validate_tracks(titles, artists, writers, producers, labels, indices, session)
+            session.commit()
+        except Exception, e:
+            session.rollback()
+            print e, '122'
+
+        movements = get_movements()
+        try:
+            # updates table 'current spreadsheet' with ids of the week's tracks
+            # puts chart position and movements for all current tracks
+            populate_current_spreadsheet(titles, movements, indices, session)
+            session.commit()
+        except Exception, e:
+            session.rollback()
+            print e, '123'
         session.commit()
     except Exception, e:
         session.rollback()
-        print e, '122'
-    movements = get_movements()
-    try:
-        # updates table 'current spreadsheet' with ids of the week's tracks
-        # puts chart position and movements for all current tracks
-        populate_current_spreadsheet(titles, movements, indices, session)
-        session.commit()
-    except Exception, e:
-        session.rollback()
-        print e, '123'
+        print e, '117'
+    session.close()
+    send_email()
 
 
 def update_artists():
@@ -340,11 +336,14 @@ def update_artists():
             if artist.twitter_id != ('None' or None):
                 artist.twitter = mytwitter.get_followers(artist.twitter_id) #verified support
             if artist.vine_id != ('None' or None):
-                print artist.vine_id
+                #print artist.vine_id
                 artist.vine = vine.get_user_data(artist.vine_id) #verified support
-            if artist.soundcloud_id is not ('None' or None):
+            if artist.soundcloud_id != ('None' or None):
                 artist.soundcloud = sc.get_num_followers(artist.soundcloud_id)
+            else:
+                artist.soundcloud = 0
             session.add(artist)
+        session.commit()
     except Exception, e:
         session.rollback()
         print e, '122'
@@ -372,11 +371,13 @@ def get_release_dates(titles, worksheet, indices, end, session):
 def populate_current_spreadsheet(titles, movements, indices, session):
     session.execute(text('TRUNCATE table current_spreadsheet'))
     n = 1
+    index = 0
     for title in titles:
         results = session.query(Track).filter(Track.title == title).all()
         if len(results) == 1:
             track = results[0]
-            session.add(Current_Spreadsheet(id = track.id, indice = indices[n-1]))
+            session.add(Current_Spreadsheet(id = track.id, indice = index))
+            index += len(track.artists)
             track.chart_position = n
             track.chart_movement = movements[n-1]
             session.add(track)
@@ -394,25 +395,129 @@ def do_days_from_release(session):
         session.add(track)
     session.commit()
 
+def send_email():
+    #artists_file
+    fp = open(artists_file, 'rb')
+    #tp = open(tracks_file, 'rb')
+    msg = MIMEText(fp.read())
+    # msg1 = MIMEText(fp.read())
+    fp.close()
+    #tp.close()
+    # me == the sender's email address
+    # you == the recipient's email address
+    msg['Subject'] = 'New Artists and Tracks for Billboard Metrics to Verify'
+    msg['From'] = 'jpatdalton@gmail.com'
+    msg['To'] = email
+
+    # Send the message via our own SMTP server, but don't include the
+    # envelope header.
+    s = smtplib.SMTP('localhost')
+    s.sendmail('jpatdalton@gmail.com', email, msg.as_string())
+    print 'email sent yo'
+    s.quit()
 '''
 import billboard_top100
+billboard_top100.send_email()
+python -m smtpd -n -c DebuggingServer localhost:1025
+
 billboard_top100.run_the_jewels()
 
-
+billboard_top100.validate_artist()
 import db_setup
 from my_models import Artist, Track, Current_Spreadsheet
 from sqlalchemy.sql import exists, text, func
 session = db_setup.get_session()
 
-query = session.query(Track).filter(Track.title == 'Nasty Freestyle').all()
+query = session.query(Track).filter(Track.title=="Where Are U Now").all()[0]
 query[0].shazam_id is 'None'
 session.close()
 
-
-import billboard_biz
-billboard_biz.get_writers_producers_labels()
-
-
+import db_setup
+session = db_setup.get_session()
+import billboard_top100
+billboard_top100.validate_artist('Wiz Khalifa', session)
+session.close()
 
 '''
+#print sys.argv
+if len(sys.argv) == 2:
+    if sys.argv[1] == 'artists':
+        print 'updating artists...'
+        update_artists()
+    elif sys.argv[1] == 'hourly':
+        print 'updating hourly...'
+        update_tracks_hourly()
+    elif sys.argv[1] == 'daily':
+        print 'updating daily...'
+        update_tracks_daily()
+    elif sys.argv[1] == 'weekly':
+        print 'updating weekly...'
+        update_tracks_weekly()
+    elif sys.argv[1] == 'uw':
+        print 'updating drive spreadsheet weekly'
+        drive_sheet.update_weekly()
+    elif sys.argv[1] == 'ua':
+        print 'updating drive spreadsheet artists'
+        drive_sheet.update_artists()
+    elif sys.argv[1] == 'uh':
+        print 'updating drive spreadsheet hourly'
+        drive_sheet.update_hourly()
+    elif sys.argv[1] == 'ud':
+        print 'updating drive spreadsheet daily'
+        drive_sheet.update_daily()
+elif len(sys.argv) == 3:
+    if sys.argv[1] == 'artists' and sys.argv[2] == 'ua':
+        print 'updating artists...'
+        update_artists()
+        print 'updating drive spreadsheet artists'
+        drive_sheet.update_artists()
+    if sys.argv[1] == 'hourly' and sys.argv[2] == 'uh':
+        print 'updating hourly...'
+        update_tracks_hourly()
+        print 'updating drive spreadsheet hourly'
+        drive_sheet.update_hourly()
+    if sys.argv[1] == 'daily' and sys.argv[2] == 'ud':
+        print 'updating daily...'
+        update_tracks_daily()
+        print 'updating drive spreadsheet daily'
+        drive_sheet.update_daily()
+    if sys.argv[1] == 'weekly' and sys.argv[2] == 'uw':
+        print 'updating weekly...'
+        update_tracks_weekly()
+        print 'updating drive spreadsheet weekly'
+        drive_sheet.update_weekly()
 
+'''
+xfvb-run python
+url = 'http://www.spotify.com'
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import pytesseract
+from PIL import Image
+import time
+
+driver = webdriver.Firefox()
+driver.get(url)
+time.sleep(2)
+
+login = driver.find_element_by_class_name('user-link')
+login.click()
+time.sleep(3)
+name = driver.find_element_by_id('login-username')
+name.send_keys("patrick@theflowtilla.com")
+time.sleep(2.1)
+password = driver.find_element_by_id('login-password')
+password.send_keys('easypassword')
+time.sleep(1)
+password.send_keys(Keys.ENTER)
+time.sleep(3)
+driver.get("https://www.spotify.com/us/redirect/webplayer/?utm_source=www.spotify.com&utm_medium=www_footer")
+time.sleep(3)
+driver.get("https://play.spotify.com/artist/137W8MRPWKqSmrBGDBFSop")
+time.sleep(4)
+driver.get_screenshot_as_file('/tmp/google.png')
+time.sleep(4)
+print(pytesseract.image_to_string(Image.open('/tmp/google.png')))
+driver.close()
+'''

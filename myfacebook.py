@@ -15,7 +15,7 @@ access_token = '1105606712786170|N51rfQuMviEjoIlqmBdGzZShes8'
 
 def get_page_data(page_id):
     api_endpoint = "https://graph.facebook.com"
-    fb_graph_url = api_endpoint+"/"+page_id
+    fb_graph_url = api_endpoint+"/"+page_id + '?&access_token=1105606712786170%7CN51rfQuMviEjoIlqmBdGzZShes8'
 
     try:
         api_request = urllib2.Request(fb_graph_url)

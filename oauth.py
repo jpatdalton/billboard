@@ -9,6 +9,8 @@ from apiclient import errors
 #from apiclient.discovery import build
 from oauth2client.client import SignedJwtAssertionCredentials
 import columns
+import datetime
+import sys
 
 #TODO: create and archive spreadsheets on the go with gdata api
 def open_spreadsheet():
@@ -17,9 +19,15 @@ def open_spreadsheet():
 
     credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
     gc = gspread.authorize(credentials)
-    dt = date.today()
 
-    fd = dt.strftime("%m-%d-%y")
+    day_of_week = datetime.datetime.today().isoweekday()
+
+    if day_of_week < 4:
+        past_thurs = datetime.datetime.today() - datetime.timedelta(days = ((day_of_week % 4)+3))
+    else:
+        past_thurs = datetime.datetime.today() - datetime.timedelta(days = (day_of_week % 4))
+
+    fd = past_thurs.strftime("%m-%d-%y")
     title = fd
     wks = ''
     try:
@@ -65,3 +73,9 @@ import oauth
 worksheet = oauth.open_worksheet()
 
 '''
+
+if len(sys.argv) == 2:
+    if sys.argv[1] == 'clear':
+        print 'clearing worksheet...'
+        wks = open_spreadsheet()
+        clear_worksheet(wks)

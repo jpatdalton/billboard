@@ -1,13 +1,83 @@
+
+sudo pip install soundcloud
+sudo pip install MySQL-python
+sudo pip install sqlalchemy
+sudo pip install beautifulsoup4
+sudo pip install gspread
+pip install --upgrade oauth2client
 pip install --upgrade google-api-python-client
---pip install facebook-sdk
-pip install soundcloud
-pip install MySQL-python
-pip install sqlalchemy
+pip install spotipy
 pip install pytesseract
-pip install Pillow
-apt-get install tesseract
- pip install alembic
+pip install selenium
+pip install facebook-sdk
+pip install python-twitter
+pip install -U requests
+sudo yum install Xvfb firefox
+pip install pyscreenshot
+
+pip install alembic
 
 import pytesseract
 from PIL import Image
-print(pytesseract.image_to_string(Image.open('/Users/jpatdalton/PycharmProjects/billboard/test1.png')))
+print(pytesseract.image_to_string(Image.open('/opt/python/bundle/2/app/billboard/test.png')))
+
+print(pytesseract.image_to_string(Image.open('test.png')))
+
+### FIREFOX
+
+curl -X GET -o RPM-GPG-KEY-lambda-epll https://lambda-linux.io/RPM-GPG-KEY-lambda-epll
+sudo rpm --import RPM-GPG-KEY-lambda-epll
+curl -X GET -o epll-release-2015.03-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.03-1.1.ll1.noarch.rpm
+sudo yum -y install epll-release-2015.03-1.1.ll1.noarch.rpm
+
+sudo yum --enablerepo=epll install firefox-compat
+
+wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-38.0.5.tar.bz2'
+tar xvjf firefox-38.0.5.tar.bz2
+ln -s /usr/local/firefox/firefox /usr/bin/firefox
+
+
+sudo apt-get install tesseract-ocr
+
+### TRUE SCRIPTS tesseract ocr
+yum groupinstall "Development Tools" -y
+yum -y install wget cmake
+yum -y install libjpeg-devel libpng-devel libtiff-devel zlib-devel
+yum -y install gcc gcc-c++ make numpy
+
+cd /lib
+mkdir leptonica
+cd leptonica
+wget http://www.leptonica.com/source/leptonica-1.72.tar.gz
+tar -zxvf leptonica-1.72.tar.gz
+cd leptonica-1.72
+./configure
+make
+sudo make install
+
+cd /lib
+mkdir tesseract-ocr
+cd tesseract-ocr
+git clone https://github.com/tesseract-ocr/tesseract.git
+cd tesseract/
+./autogen.sh
+./configure
+make
+make install
+sudo ldconfig
+
+wget https://tesseract-ocr.googlecode.com/files/eng.traineddata.gz
+gunzip eng.traineddata.gz
+sudo mv -v eng.traineddata /usr/local/share/tessdata/
+
+### SCROT
+wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+rpm -Uvh rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+
+sudo yum install giblib-devel
+wget http://linuxbrit.co.uk/downloads/scrot-0.8.tar.gz
+tar xvfvz scrot-0.8.tar.gz
+cd scrot-0.8
+./configure
+make
+make install

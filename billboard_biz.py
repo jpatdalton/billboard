@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import columns
 
+
 def get_details(worksheet, indices, end):
     driver = webdriver.Firefox()
     url = 'http://www.billboard.com/biz/charts/the-billboard-hot-100'
@@ -99,3 +100,5 @@ def get_writers_producers_labels():
         n+=1
     print len(writers), len(producers), len(labels)
     return writers, producers, labels
+
+

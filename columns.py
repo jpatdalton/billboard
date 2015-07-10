@@ -31,35 +31,35 @@ soundcloud='AB'
 vine='AC'
 
 headers = [
-    "Chart Position",
-    "Chart Movement",
-    "Song Title",
-    "Artists",
-    "Writers",
-    "Producers",
-    "Label",
-    "Itunes Chart Position", #
-    "Days Since Release", #
-    "Radio Position", #
-    "Overall Radio Spins", #
-    "Overall Spins Last Week", #
-    "Spins Difference", #
-    "Pop Position", #
-    "Pop Spins", #
-    "Rhythmic Spins", #
-    "Urban Spins", #
-    "Radio Days (Pop)", #
-    "Audience (Millions)", #
-    "Youtube Views", #
-    "Spotify Popularity", #
-    "Spotify Streams",
-    "Shazams", #
-    "Shazam Chart Position", #
-    "Facebook Likes", #
-    "Instagram Followers", #
-    "Twitter Followers", #
-    "Soundcloud Followers", #
-    "Vine Followers" #
+    "Chart Position (w)",
+    "Chart Movement (w)",
+    "Song Title (w)",
+    "Artists (w)",
+    "Writers (w)",
+    "Producers (w)",
+    "Label (w)",
+    "Itunes Chart Position (d)", #
+    "Days Since Release (d)", #
+    "Radio Position (d)", #
+    "Overall Radio Spins (d)", #
+    "Overall Spins Last Week (d)", #
+    "Spins Difference (d)", #
+    "Pop Position (d)", #
+    "Pop Spins (d)", #
+    "Rhythmic Spins (d)", #
+    "Urban Spins (d)", #
+    "Radio Days [Pop] (d)", #
+    "Audience [Millions] (d)", #
+    "Youtube Views (h)", #
+    "Spotify Popularity (h)", #
+    "Spotify Streams (w)",
+    "Shazams (h)", #
+    "Shazam Chart Position (h)", #
+    "Facebook Likes (h)", #
+    "Instagram Followers (h)", #
+    "Twitter Followers (h)", #
+    "Soundcloud Followers (h)", #
+    "Vine Followers (h)" #
 ]
 
 '''import db_setup

@@ -43,3 +43,12 @@ def get_followers(page_id):
     except Exception, e:
         print e, page_id, 'Insta get followers'
     return followers
+
+def get_username(page_id):
+    username = ''
+    try:
+        api_endpoint_id = 'https://api.instagram.com/v1/users/' + page_id + '/?client_id=784b8821947441119467c6358fe7601b'
+        username = requests.get(api_endpoint_id).json()["data"]["username"]
+    except Exception, e:
+        print e, page_id, 'Insta get username'
+    return username

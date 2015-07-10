@@ -45,3 +45,13 @@ def get_id(name):
     except Exception, e:
         print e, 'Cant get Soundcloud id for artist: ' + name
     return the_id
+
+def get_page(id):
+    url = ''
+    try:
+        req = 'https://api.soundcloud.com/users/'+str(id)+'.json?client_id='+YOUR_CLIENT_ID
+        user = requests.get(req).json()
+        url = user["permalink_url"]
+    except Exception, e:
+        print e, 'soundcloud url error ', id
+    return url
