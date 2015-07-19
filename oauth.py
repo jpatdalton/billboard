@@ -22,12 +22,12 @@ def open_spreadsheet():
 
     day_of_week = datetime.datetime.today().isoweekday()
 
-    if day_of_week < 4:
-        past_thurs = datetime.datetime.today() - datetime.timedelta(days = ((day_of_week % 4)+3))
+    if day_of_week < 2:
+        past_tues = datetime.datetime.today() - datetime.timedelta(days = (day_of_week) + 5)
     else:
-        past_thurs = datetime.datetime.today() - datetime.timedelta(days = (day_of_week % 4))
+        past_tues = datetime.datetime.today() - datetime.timedelta(days = (day_of_week) - 2)
 
-    fd = past_thurs.strftime("%m-%d-%y")
+    fd = past_tues.strftime("%m-%d-%y")
     title = fd
     wks = ''
     try:

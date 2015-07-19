@@ -25,8 +25,9 @@ from my_models import Artist, Track, Current_Spreadsheet
 from sqlalchemy.sql import exists, text, func
 import smtplib
 from email.mime.text import MIMEText
+import os.path
 
-email = 'steve@unrestricted.co; patrick@theflowtilla.com'
+recipients = ['admin@unrestricted.co', 'steve@unrestricted.co', 'jpatdalton@gmail.com']
 today = datetime.datetime.today()
 td = today.strftime("%m-%d-%y")
 artists_file = 'new_artists_' + td + '.txt'
@@ -396,23 +397,28 @@ def do_days_from_release(session):
     session.commit()
 
 def send_email():
-    #artists_file
-    fp = open(artists_file, 'rb')
-    #tp = open(tracks_file, 'rb')
-    msg = MIMEText(fp.read())
-    # msg1 = MIMEText(fp.read())
-    fp.close()
-    #tp.close()
+    message = ''
+    if os.path.isfile(tracks_file):
+        tp = open(tracks_file, 'rb')
+        message += '     -- NEW TRACKS --\n\n'
+        message += tp.read()
+        tp.close()
+    if os.path.isfile(artists_file):
+        fp = open(artists_file, 'rb')
+        message += '     -- NEW ARTISTS --\n\n'
+        message += fp.read()
+        fp.close()
     # me == the sender's email address
     # you == the recipient's email address
+    msg = MIMEText(message)
     msg['Subject'] = 'New Artists and Tracks for Billboard Metrics to Verify'
     msg['From'] = 'jpatdalton@gmail.com'
-    msg['To'] = email
+    msg['To'] = ", ".join(recipients)
 
     # Send the message via our own SMTP server, but don't include the
     # envelope header.
     s = smtplib.SMTP('localhost')
-    s.sendmail('jpatdalton@gmail.com', email, msg.as_string())
+    s.sendmail('jpatdalton@gmail.com', recipients, msg.as_string())
     print 'email sent yo'
     s.quit()
 '''
