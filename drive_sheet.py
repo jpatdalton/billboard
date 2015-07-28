@@ -130,6 +130,27 @@ def update_weekly():
     finally:
         session.close()
 
+def update_spotify():
+    session = db_setup.get_session()
+    try:
+        worksheet = oauth.open_spreadsheet()
+        today = datetime.today()
+        end = str(int(session.query(func.max(Current_Spreadsheet.indice)).all()[0][0]) + 2)
+        track_ids = session.query(Current_Spreadsheet).all()
+        col = columns.spotify_streams
+        cell_list_spotify_streams = worksheet.range(col+'2:'+col+end)
+        n = 0
+        for track_id in track_ids:
+            track = session.query(Track).get(track_id.id)
+            i = track_id.indice
+            cell_list_spotify_streams[i].value = track.spotify_streams
+            n+=1
+        worksheet.update_cells(cell_list_spotify_streams)
+    except Exception, e:
+        print e, 'error in update worksheet spoitfy'
+    finally:
+        session.close()
+
 
 def update_daily():
     session = db_setup.get_session()
@@ -201,7 +222,6 @@ def update_daily():
         worksheet.update_cells(cell_list_dates)
     except Exception, e:
         print e, 'error in update worksheet daily'
-        session.close()
     finally:
         session.close()
 

@@ -85,5 +85,6 @@ class Artist(Base):
     twitter_id = Column(String(20))
     vine = Column(Integer)
     vine_id = Column(String(20))
+    spotify_id = Column(String(25))
 
 

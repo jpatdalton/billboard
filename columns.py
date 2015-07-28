@@ -40,10 +40,10 @@ headers = [
     "Label (w)",
     "Itunes Chart Position (d)", #
     "Days Since Release (d)", #
-    "Radio Position (d)", #
+    "Overall Radio Position (d)", #
     "Overall Radio Spins (d)", #
     "Overall Spins Last Week (d)", #
-    "Spins Difference (d)", #
+    "Spins Difference Week to Week (d)", #
     "Pop Position (d)", #
     "Pop Spins (d)", #
     "Rhythmic Spins (d)", #

@@ -17,47 +17,9 @@ html = response.read()
 pop_soup = BeautifulSoup(html)
 '''
 
-today = date.today()
-yesterday = date.today() - datetime.timedelta(days = 1)
-week_ago = date.today() - datetime.timedelta(days = 7)
-fd = week_ago.strftime("%Y%m%d")
-td = today.strftime("%Y%m%d")
-yd = yesterday.strftime("%Y%m%d")
 
-url_spins = 'http://kworb.net/radio/'
-response = urllib2.urlopen(url_spins)
-html = response.read()
-pop_soup = BeautifulSoup(html)
-
-url_spins = 'http://kworb.net/airadio/'
-response = urllib2.urlopen(url_spins)
-html = response.read()
-soup = BeautifulSoup(html)
-try:
-    url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
-    response = urllib2.urlopen(url_spins)
-    html = response.read()
-    urban_soup = BeautifulSoup(html)
-except Exception, e:
-    print e, 'Couldnt get archived spins'
-    td = yd
-    url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
-    response = urllib2.urlopen(url_spins)
-    html = response.read()
-    urban_soup = BeautifulSoup(html)
-
-url_spins = 'http://kworb.net/radio/rhythmic/archives/' + td + '.html'
-response = urllib2.urlopen(url_spins)
-html = response.read()
-rhythmic_soup = BeautifulSoup(html)
-
-url_spins = 'http://kworb.net/airadio/archives/' + fd + '.html'
-response = urllib2.urlopen(url_spins)
-html = response.read()
-soup_lw = BeautifulSoup(html)
 
 def get_spins(main_artists, song_titles, worksheet, indices, end):
-    '''
     today = date.today()
     yesterday = date.today() - datetime.timedelta(days = 1)
     week_ago = date.today() - datetime.timedelta(days = 7)
@@ -96,7 +58,6 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
     response = urllib2.urlopen(url_spins)
     html = response.read()
     soup_lw = BeautifulSoup(html)
-    '''
     col = columns.spins
     col_audience = columns.audience
     col_spins_pos = columns.spins_pos
@@ -204,7 +165,8 @@ def get_spins(main_artists, song_titles, worksheet, indices, end):
 
     #return pop_soup, soup, urban_soup, rhythmic_soup, soup_lw
 
-def find_in_soup(title):
+def find_in_soup(title, pop_soup, urban_soup, rhythmic_soup, soup, soup_lw):
+
     results = [None] * 11
     current_song = title
     try:
@@ -262,13 +224,51 @@ def find_in_soup(title):
     return results
 
 def update_tracks(track_ids, session):
+    today = date.today()
+    yesterday = date.today() - datetime.timedelta(days = 1)
+    week_ago = date.today() - datetime.timedelta(days = 7)
+    fd = week_ago.strftime("%Y%m%d")
+    td = today.strftime("%Y%m%d")
+    yd = yesterday.strftime("%Y%m%d")
+
+    url_spins = 'http://kworb.net/radio/'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    pop_soup = BeautifulSoup(html)
+
+    url_spins = 'http://kworb.net/airadio/'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    soup = BeautifulSoup(html)
+    try:
+        url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+        response = urllib2.urlopen(url_spins)
+        html = response.read()
+        urban_soup = BeautifulSoup(html)
+    except Exception, e:
+        print e, 'Couldnt get archived spins'
+        td = yd
+        url_spins = 'http://kworb.net/radio/urban/archives/' + td + '.html'
+        response = urllib2.urlopen(url_spins)
+        html = response.read()
+        urban_soup = BeautifulSoup(html)
+
+    url_spins = 'http://kworb.net/radio/rhythmic/archives/' + td + '.html'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    rhythmic_soup = BeautifulSoup(html)
+
+    url_spins = 'http://kworb.net/airadio/archives/' + fd + '.html'
+    response = urllib2.urlopen(url_spins)
+    html = response.read()
+    soup_lw = BeautifulSoup(html)
     for track_id in track_ids:
         track = session.query(Track).get(track_id.id)
         if track.spins_id is not None:
             title = track.spins_id
         else:
             title = track.title
-        spins_results = find_in_soup(title)
+        spins_results = find_in_soup(title, pop_soup, urban_soup, rhythmic_soup, soup, soup_lw)
         if len(spins_results) is not 0:
             if spins_results[0] is not None:
                 track.radio_position = int(spins_results[0])

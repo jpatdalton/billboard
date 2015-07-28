@@ -4,14 +4,14 @@ sudo pip install MySQL-python
 sudo pip install sqlalchemy
 sudo pip install beautifulsoup4
 sudo pip install gspread
-pip install --upgrade oauth2client
-pip install --upgrade google-api-python-client
-pip install spotipy
-pip install pytesseract
-pip install selenium
-pip install facebook-sdk
-pip install python-twitter
-pip install -U requests
+sudo pip install --upgrade oauth2client
+sudo pip install --upgrade google-api-python-client
+sudo pip install spotipy
+sudo pip install pytesseract
+sudo pip install selenium
+sudo pip install facebook-sdk
+sudo pip install python-twitter
+sudo pip install -U requests
 sudo yum install Xvfb firefox
 pip install pyscreenshot
 
@@ -24,17 +24,17 @@ print(pytesseract.image_to_string(Image.open('/opt/python/bundle/2/app/billboard
 print(pytesseract.image_to_string(Image.open('test.png')))
 
 ### FIREFOX
-
-curl -X GET -o RPM-GPG-KEY-lambda-epll https://lambda-linux.io/RPM-GPG-KEY-lambda-epll
+cd /usr/local/
+sudo curl -X GET -o RPM-GPG-KEY-lambda-epll https://lambda-linux.io/RPM-GPG-KEY-lambda-epll
 sudo rpm --import RPM-GPG-KEY-lambda-epll
-curl -X GET -o epll-release-2015.03-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.03-1.1.ll1.noarch.rpm
+sudo curl -X GET -o epll-release-2015.03-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.03-1.1.ll1.noarch.rpm
 sudo yum -y install epll-release-2015.03-1.1.ll1.noarch.rpm
 
 sudo yum --enablerepo=epll install firefox-compat
 
-wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-38.0.5.tar.bz2'
-tar xvjf firefox-38.0.5.tar.bz2
-ln -s /usr/local/firefox/firefox /usr/bin/firefox
+wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-39.0.tar.bz2'
+tar xvjf firefox-39.0.tar.bz2
+sudo ln -s /home/ec2-user/firefox/firefox /usr/bin/firefox
 
 
 sudo apt-get install tesseract-ocr

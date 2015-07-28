@@ -90,8 +90,8 @@ def validate_artist(art_name, session):
 
     query = session.query(Artist).filter(Artist.name == art_name).all()
     if len(query) is 0:
-        fb_id, insta_id, twitter_id, vine_id, sc_id = get_artists_ids(art_name)
-        art = Artist(name=art_name, fb_id=fb_id, instagram_id=insta_id, twitter_id=twitter_id, vine_id=vine_id, soundcloud_id=sc_id)
+        fb_id, insta_id, twitter_id, vine_id, sc_id, spotify_id = get_artists_ids(art_name)
+        art = Artist(name=art_name, fb_id=fb_id, instagram_id=insta_id, twitter_id=twitter_id, vine_id=vine_id, soundcloud_id=sc_id, spotify_id=spotify_id)
         session.add(art)
         session.commit()
         print 'Made new artist - ' + art_name
@@ -244,15 +244,14 @@ def update_tracks_hourly():
         track_ids = session.query(Current_Spreadsheet).all()
         for track_id in track_ids:
             track = session.query(Track).get(track_id.id)
-            '''
+
             if track.youtube_id != ('None' or None):
                 track.youtube_views = youtube.get_views(track.youtube_id)
-            '''
             if track.shazam_id != ('None' or None):
                 track.shazams, track.shazam_chart_pos = shazam.get_shazam_stats(track.shazam_id) #verified support
-            '''if track.spotify_id != ('None' or None):
+            if track.spotify_id != ('None' or None):
                 track.spotify_popularity = spotify.get_popularity(track.spotify_id)
-            '''
+
             session.add(track)
         session.commit()
     except Exception, e:
@@ -281,11 +280,12 @@ def update_tracks_weekly():
     session = db_setup.get_session()
     try:
         artists, titles, indices = get_top100()
-        '''
+
         #ARTIST STUFF
         #TODO: only validate the artists from tracks
+        '''
         try:
-            validate_artists(artists, session)
+            validate_artist(artists, session)
             session.commit()
         except Exception, e:
             session.rollback()
@@ -311,11 +311,12 @@ def update_tracks_weekly():
         try:
             # updates table 'current spreadsheet' with ids of the week's tracks
             # puts chart position and movements for all current tracks
-            populate_current_spreadsheet(titles, movements, indices, session)
+            populate_current_spreadsheet(titles, movements, session)
             session.commit()
         except Exception, e:
             session.rollback()
             print e, '123'
+
         session.commit()
     except Exception, e:
         session.rollback()
@@ -356,7 +357,8 @@ def get_artists_ids(name):
     twitter_id = mytwitter.get_id(name) #verified support
     vine_id = vine.get_id(name) #verified support
     soundcloud_id = sc.get_id(name)
-    return fb_id, instagram_id, twitter_id, vine_id, soundcloud_id
+    spotify_id = spotify.get_artist_id(name)
+    return fb_id, instagram_id, twitter_id, vine_id, soundcloud_id, spotify_id
 
 def get_release_dates(titles, worksheet, indices, end, session):
     col = columns.release_date
@@ -369,7 +371,7 @@ def get_release_dates(titles, worksheet, indices, end, session):
         n+=1
     worksheet.update_cells(cell_list_dates)
 
-def populate_current_spreadsheet(titles, movements, indices, session):
+def populate_current_spreadsheet(titles, movements, session):
     session.execute(text('TRUNCATE table current_spreadsheet'))
     n = 1
     index = 0
@@ -445,6 +447,18 @@ billboard_top100.validate_artist('Wiz Khalifa', session)
 session.close()
 
 '''
+'''
+%%% ADD ARTIST TO TRACK %%%
+import db_setup
+session = db_setup.get_session()
+import billboard_top100
+from my_models import Artist, Track, Current_Spreadsheet
+query = session.query(Track).filter(Track.title=="My Way").all()[0]
+billboard_top100.validate_artist("Monty", session)
+art = session.query(Artist).filter(Artist.name=="Monty").all()[0]
+query.artists.append(art)
+
+'''
 #print sys.argv
 if len(sys.argv) == 2:
     if sys.argv[1] == 'artists':
@@ -459,6 +473,9 @@ if len(sys.argv) == 2:
     elif sys.argv[1] == 'weekly':
         print 'updating weekly...'
         update_tracks_weekly()
+    elif sys.argv[1] == 'us':
+        print 'updating drive spreadsheet spotify'
+        drive_sheet.update_spotify()
     elif sys.argv[1] == 'uw':
         print 'updating drive spreadsheet weekly'
         drive_sheet.update_weekly()
@@ -493,37 +510,42 @@ elif len(sys.argv) == 3:
         print 'updating drive spreadsheet weekly'
         drive_sheet.update_weekly()
 
-'''
-xfvb-run python
-url = 'http://www.spotify.com'
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-import pytesseract
-from PIL import Image
-import time
+def get_artist_spotify_ids():
+    session = db_setup.get_session()
+    try:
+        artists = session.query(Artist).all()
+        for artist in artists:
+            art_id = spotify.get_artist_id(artist.name)
+            artist.spotify_id = art_id
+            print artist.name + ' ' + str(art_id)
+            session.add(artist)
+        session.commit()
+    except Exception, e:
+        session.rollback()
+        print e, '119'
+    session.close()
 
-driver = webdriver.Firefox()
-driver.get(url)
-time.sleep(2)
+def get_spotify_streams():
+    session = db_setup.get_session()
+    try:
+        track_ids = session.query(Current_Spreadsheet).all()
+        driver = spotify.login()
+        for track_id in track_ids:
+            art_id = ''
+            streams = 0
+            track = session.query(Track).get(track_id.id)
+            art_id = track.artists[0].spotify_id
+            if track.spotify_streams == 0 and track.artists[0].name != 'Taylor Swift':
+                streams = spotify.get_streams(driver, track.title, art_id)
+                track.spotify_streams = streams
+                session.add(track)
+                session.commit()
+    except Exception, e:
+        session.rollback()
+        print e, '119'
+    finally:
+        session.close()
+        driver.close()
 
-login = driver.find_element_by_class_name('user-link')
-login.click()
-time.sleep(3)
-name = driver.find_element_by_id('login-username')
-name.send_keys("patrick@theflowtilla.com")
-time.sleep(2.1)
-password = driver.find_element_by_id('login-password')
-password.send_keys('easypassword')
-time.sleep(1)
-password.send_keys(Keys.ENTER)
-time.sleep(3)
-driver.get("https://www.spotify.com/us/redirect/webplayer/?utm_source=www.spotify.com&utm_medium=www_footer")
-time.sleep(3)
-driver.get("https://play.spotify.com/artist/137W8MRPWKqSmrBGDBFSop")
-time.sleep(4)
-driver.get_screenshot_as_file('/tmp/google.png')
-time.sleep(4)
-print(pytesseract.image_to_string(Image.open('/tmp/google.png')))
-driver.close()
-'''
+
+
