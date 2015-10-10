@@ -144,7 +144,7 @@ def validate_tracks(tracks, artists, writers, producers, labels, indices, sessio
                 try:
                     populated_track.writers = writers[n]
                     populated_track.producers = producers[n]
-                    populated_track.labels = labels[n]
+                    populated_track.label = labels[n]
                 except Exception, e:
                     print 'Trouble with writers, producers, labels'
                 try:

@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1e0e3800-dc5d-4e8c-aed2-1905d66c4d06" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cron" afterPath="$PROJECT_DIR$/cron" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/startup_commands" afterPath="$PROJECT_DIR$/startup_commands" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/billboard_top100.py" afterPath="$PROJECT_DIR$/billboard_top100.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="billboard.iws" />
@@ -59,8 +58,8 @@
           <file leaf-file-name="myfacebook.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/myfacebook.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.505618">
-                  <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.56179774">
+                  <caret line="37" column="19" selection-start-line="37" selection-start-column="19" selection-end-line="37" selection-end-column="19" />
                   <folding>
                     <element signature="e#27#41#0" expanded="true" />
                   </folding>
@@ -140,11 +139,11 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="billboard_top100.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="billboard_top100.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/billboard_top100.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-7.2222223">
-                  <caret line="33" column="38" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
+                <state vertical-scroll-proportion="0.62919134">
+                  <caret line="136" column="42" selection-start-line="136" selection-start-column="42" selection-end-line="136" selection-end-column="42" />
                   <folding>
                     <element signature="e#27#41#0" expanded="true" />
                   </folding>
@@ -186,11 +185,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="cron" pinned="false" current-in-tab="true">
+          <file leaf-file-name="cron" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/cron">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.2247191">
-                  <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
                   <folding />
                 </state>
               </provider>
@@ -210,8 +209,10 @@
             <entry file="file://$PROJECT_DIR$/billboard_biz.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="78" column="17" selection-start-line="62" selection-start-column="4" selection-end-line="78" selection-end-column="17" />
-                  <folding />
+                  <caret line="61" column="32" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="32" />
+                  <folding>
+                    <element signature="e#27#41#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -259,7 +260,6 @@
         <option value="$PROJECT_DIR$/alembic/versions/490994773470_add_indices_to_current_spreadsheet.py" />
         <option value="$PROJECT_DIR$/alembic/versions/565a955660e_rename_index_column.py" />
         <option value="$PROJECT_DIR$/mytwitter.py" />
-        <option value="$PROJECT_DIR$/billboard_biz.py" />
         <option value="$PROJECT_DIR$/instagram.py" />
         <option value="$PROJECT_DIR$/sc.py" />
         <option value="$PROJECT_DIR$/oauth.py" />
@@ -272,10 +272,11 @@
         <option value="$PROJECT_DIR$/spotify.py" />
         <option value="$PROJECT_DIR$/myfacebook.py" />
         <option value="$PROJECT_DIR$/create_files" />
-        <option value="$PROJECT_DIR$/billboard_top100.py" />
         <option value="$PROJECT_DIR$/db_setup.py" />
         <option value="$PROJECT_DIR$/startup_commands" />
         <option value="$PROJECT_DIR$/cron" />
+        <option value="$PROJECT_DIR$/billboard_biz.py" />
+        <option value="$PROJECT_DIR$/billboard_top100.py" />
       </list>
     </option>
   </component>
@@ -561,13 +562,13 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32289156" sideWeight="0.57796854" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32289156" sideWeight="0.43061516" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.022174535" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13018598" sideWeight="0.858" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32289156" sideWeight="0.42203146" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32289156" sideWeight="0.5693848" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.1423462" sideWeight="0.142" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49386084" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32692307" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -942,14 +943,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/billboard_biz.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="78" column="17" selection-start-line="62" selection-start-column="4" selection-end-line="78" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/new_tracks_10-06-15.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -973,16 +966,6 @@
         <state vertical-scroll-proportion="0.30898875">
           <caret line="11" column="34" selection-start-line="11" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/billboard_top100.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.2222223">
-          <caret line="33" column="38" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
-          <folding>
-            <element signature="e#27#41#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1030,16 +1013,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myfacebook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.505618">
-          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding>
-            <element signature="e#27#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/startup_commands">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1048,11 +1021,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/myfacebook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.56179774">
+          <caret line="37" column="19" selection-start-line="37" selection-start-column="19" selection-end-line="37" selection-end-column="19" />
+          <folding>
+            <element signature="e#27#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cron">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2247191">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/billboard_biz.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="61" column="32" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="32" />
+          <folding>
+            <element signature="e#27#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/billboard_top100.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.62919134">
+          <caret line="136" column="42" selection-start-line="136" selection-start-column="42" selection-end-line="136" selection-end-column="42" />
+          <folding>
+            <element signature="e#27#41#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
