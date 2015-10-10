@@ -1,7 +1,8 @@
-23 */2 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py artists ua > /home/ec2-user/log_artists_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+23 */4 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py artists ua > /home/ec2-user/log_artists_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
 44 19 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py daily ud > /home/ec2-user/log_daily_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
-11 14 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; PATH=$scraper/firefox:$PATH; xvfb-run python billboard_top100.py weekly uw > /home/ec2-user/log_weekly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
-33 */2 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py hourly uh > /home/ec2-user/log_hourly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
-58 23 * * * ec2-user cd /home/ec2-user/; zip archives/log_`date +\%Y-\%m-\%d`.zip *.txt; sudo rm *.txt;
+11 14 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; PATH=$scraper/firefox:$PATH;sudo xvfb-run python billboard_top100.py weekly uw > /home/ec2-user/log_weekly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+33 */4 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py hourly uh > /home/ec2-user/log_hourly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+58 23 * * * ec2-user cd /home/ec2-user/; tar czf archives/log_`date +\%Y-\%m-\%d`.tar.gz *.txt; sudo rm *.txt;
 03 14 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python oauth.py clear;
+01 14 * * 2 root cd /opt/python/current/app/billboard; python create_files.py
 

@@ -1,0 +1,8 @@
+import datetime
+
+today = datetime.datetime.today()
+td = today.strftime("%m-%d-%y")
+artists_file = 'new_tracks_and_artists/new_artists_' + td + '.txt'
+tracks_file = 'new_tracks_and_artists/new_tracks_' + td + '.txt'
+tp = open(tracks_file, 'w+')
+tp2 = open(tracks_file, 'w+')

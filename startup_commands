@@ -1,4 +1,5 @@
-
+sudo yum install python-devel mysql-devel
+sudo yum install gcc
 sudo pip install soundcloud
 sudo pip install MySQL-python
 sudo pip install sqlalchemy
@@ -13,9 +14,8 @@ sudo pip install facebook-sdk
 sudo pip install python-twitter
 sudo pip install -U requests
 sudo yum install Xvfb firefox
-pip install pyscreenshot
 
-pip install alembic
+sudo pip install alembic
 
 import pytesseract
 from PIL import Image
@@ -27,14 +27,14 @@ print(pytesseract.image_to_string(Image.open('test.png')))
 cd /usr/local/
 sudo curl -X GET -o RPM-GPG-KEY-lambda-epll https://lambda-linux.io/RPM-GPG-KEY-lambda-epll
 sudo rpm --import RPM-GPG-KEY-lambda-epll
-sudo curl -X GET -o epll-release-2015.03-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.03-1.1.ll1.noarch.rpm
-sudo yum -y install epll-release-2015.03-1.1.ll1.noarch.rpm
+sudo curl -X GET -o epll-release-2015.09-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.09-1.1.ll1.noarch.rpm
+sudo yum -y install epll-release-2015.09-1.1.ll1.noarch.rpm
 
 sudo yum --enablerepo=epll install firefox-compat
 
-wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-39.0.tar.bz2'
-tar xvjf firefox-39.0.tar.bz2
-sudo ln -s /home/ec2-user/firefox/firefox /usr/bin/firefox
+wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-41.0.1.tar.bz2'
+tar xvjf firefox-41.0.1.tar.bz2
+sudo ln -s /usr/local/firefox/firefox /usr/bin/firefox
 
 
 sudo apt-get install tesseract-ocr

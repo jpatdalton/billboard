@@ -30,8 +30,8 @@ import os.path
 recipients = ['admin@unrestricted.co', 'steve@unrestricted.co', 'jpatdalton@gmail.com']
 today = datetime.datetime.today()
 td = today.strftime("%m-%d-%y")
-artists_file = 'new_artists_' + td + '.txt'
-tracks_file = 'new_tracks_' + td + '.txt'
+artists_file = 'new_tracks_and_artists/new_artists_' + td + '.txt'
+tracks_file = 'new_tracks_and_artists/new_tracks_' + td + '.txt'
 
 def get_top100():
 
@@ -322,8 +322,10 @@ def update_tracks_weekly():
         session.rollback()
         print e, '117'
     session.close()
-    send_email()
-
+    try:
+        send_email()
+    except Exception,e:
+        print '$$$ Couldnt send email!', e
 
 def update_artists():
     session = db_setup.get_session()
@@ -400,16 +402,14 @@ def do_days_from_release(session):
 
 def send_email():
     message = ''
-    if os.path.isfile(tracks_file):
-        tp = open(tracks_file, 'rb')
-        message += '     -- NEW TRACKS --\n\n'
-        message += tp.read()
-        tp.close()
-    if os.path.isfile(artists_file):
-        fp = open(artists_file, 'rb')
-        message += '     -- NEW ARTISTS --\n\n'
-        message += fp.read()
-        fp.close()
+    tp = open(tracks_file, 'w+')
+    message += '     -- NEW TRACKS --\n\n'
+    message += tp.read()
+    tp.close()
+    fp = open(artists_file, 'w+')
+    message += '     -- NEW ARTISTS --\n\n'
+    message += fp.read()
+    fp.close()
     # me == the sender's email address
     # you == the recipient's email address
     msg = MIMEText(message)
@@ -535,7 +535,7 @@ def get_spotify_streams():
             streams = 0
             track = session.query(Track).get(track_id.id)
             art_id = track.artists[0].spotify_id
-            if track.spotify_streams == 0 and track.artists[0].name != 'Taylor Swift':
+            if track.artists[0].name != 'Taylor Swift':
                 streams = spotify.get_streams(driver, track.title, art_id)
                 track.spotify_streams = streams
                 session.add(track)
