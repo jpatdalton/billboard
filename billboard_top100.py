@@ -136,17 +136,17 @@ def validate_tracks(tracks, artists, writers, producers, labels, indices, sessio
             print 'Creating this new track - ' + title
             new_track = Track(title=title)
             populated_track = populate_track_info(new_track)
+            try:
+                populated_track.writers = writers[n]
+                populated_track.producers = producers[n]
+                populated_track.label = labels[n]
+            except Exception, e:
+                print 'Trouble with writers, producers, labels'
             if n == 99:
                 next_ind = len(artists)
             else:
                 next_ind = indices[n+1]
             for i in xrange(next_ind - indices[n]):
-                try:
-                    populated_track.writers = writers[n]
-                    populated_track.producers = producers[n]
-                    populated_track.label = labels[n]
-                except Exception, e:
-                    print 'Trouble with writers, producers, labels'
                 try:
                     the_artist = validate_artist(artists[indices[n]+i], session)
                     populated_track.artists.append(the_artist)
@@ -301,6 +301,8 @@ def update_tracks_weekly():
          #TRACK STUFF
         try:
             # used to populate track billboard info
+            tt = open(artists_file, 'w+')
+            ta = open(tracks_file, 'w+')
             validate_tracks(titles, artists, writers, producers, labels, indices, session)
             session.commit()
         except Exception, e:
@@ -402,11 +404,11 @@ def do_days_from_release(session):
 
 def send_email():
     message = ''
-    tp = open(tracks_file, 'w+')
+    tp = open(tracks_file, 'rb')
     message += '     -- NEW TRACKS --\n\n'
     message += tp.read()
     tp.close()
-    fp = open(artists_file, 'w+')
+    fp = open(artists_file, 'rb')
     message += '     -- NEW ARTISTS --\n\n'
     message += fp.read()
     fp.close()
