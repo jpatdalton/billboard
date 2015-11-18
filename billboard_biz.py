@@ -91,12 +91,26 @@ def get_writers_producers_labels():
             text = arr[len(arr)-2].strip()
             text1 = text.split('(')
             producers.append(text1[0].strip())
+        except Exception, e:
+            print title
+            print e, 'The above element has no producers'
+            producers.append('None Listed')
+        try:
             text2 = text1[1].split(')')
             writers.append(text2[0])
+        except Exception, e:
+            print title
+            print e, 'The above element has no writers'
+            writers.append('None Listed')
+        try:
             text3 = text2[1].split()
             labels.append(' '.join(text3))
         except Exception, e:
-            print e, 'Billboard Biz'
+            print title
+            print e, 'The above element has no label'
+            labels.append('None Listed')
+
+
         n+=1
     print len(writers), len(producers), len(labels)
     return writers, producers, labels
