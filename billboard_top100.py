@@ -40,13 +40,15 @@ def get_top100():
     html = response.read()
     soup = BeautifulSoup(html)
 
-    titles = soup.select(".row-title")
+    titles = soup.select(".chart-row__song")
+    artists = soup.select('.chart-row__artist')
     song_titles = list()
     song_artists = list()
     indices = list()
     for title in titles:
-        song_titles.append(title.find("h2").get_text().strip())
-        song_artists.append(title.find("h3").get_text().strip())
+        song_titles.append(title.get_text().strip())
+    for artist in artists:
+        song_artists.append(artist.find("a").get_text().strip())
     main_artists = list()
 
     total = 0
@@ -134,8 +136,8 @@ def validate_tracks(tracks, artists, writers, producers, labels, indices, sessio
             session.add(populated_track)
         elif len(results) is 0:
             print 'Creating this new track - ' + title
-            new_track = Track(title=title)
-            populated_track = populate_track_info(new_track)
+            populated_track = Track(title=title)
+
             try:
                 populated_track.writers = writers[n]
                 populated_track.producers = producers[n]
@@ -152,6 +154,7 @@ def validate_tracks(tracks, artists, writers, producers, labels, indices, sessio
                     populated_track.artists.append(the_artist)
                 except Exception, e:
                     print e, 'Problem appending artists to track - ', title
+            populated_track = populate_track_info(populated_track)
             session.add(populated_track)
             session.commit()
             add_new_track(populated_track)
@@ -179,7 +182,7 @@ def populate_track_info(track):
         track.days_from_release = itunes.calculate_days_from_release(release_dt)
         track.youtube_id = youtube.get_id(track.title)
         track.spotify_id = spotify.get_id(track.title)
-        track.shazam_id = shazam.get_id(track.title)
+        track.shazam_id = shazam.get_id(track.title + ' ' + track.artists[0].name)
     except Exception, e:
         print e, 'populate_track_info', track.title
     return track
@@ -191,10 +194,10 @@ def get_movements():
     html = response.read()
     soup = BeautifulSoup(html)
 
-    moves = soup.select(".row-rank")
+    moves = soup.select(".chart-row__last-week")
     n = 0
-    for move in moves:
-        last_week = move.select('.last-week')[0].string[11:].strip()
+    for i in range(0, 199, 2):
+        last_week = moves[i].string[11:].strip()
         if last_week == '--':
             diff = 'N/A'
         else:
@@ -208,33 +211,6 @@ def get_movements():
 
 def run_the_jewels():
     session = db_setup.get_session()
-
-    worksheet = oauth.open_spreadsheet()
-
-    #drive_sheet.update_weekly(session, worksheet)
-    drive_sheet.update_daily(session, worksheet)
-    #drive_sheet.update_artists(session, worksheet)
-    #artists, titles, indices = get_top100()
-    #movements = get_movements()
-    #ARTIST STUFF
-
-    #movements = get_movements()
-    #num = len(artists)
-    #end = str(2+num)
-    #billboard_biz.get_details(worksheet, indices, end)
-    #put_titles(titles, movements, worksheet, indices, end)
-    #put_artists(artists, worksheet, indices)
-    #spins.get_spins(artists, titles, worksheet, indices, end)
-    #itunes.itunes_search(titles, worksheet, indices, end)
-    #youtube.youtube_search(titles, worksheet, indices, end)
-    #spotify.spotify_search(titles, worksheet, indices, end)
-    #shazam.shazam_search(titles, worksheet, indices, end)
-
-    #myfacebook.get_likes(artists, worksheet, end)
-    #instagram.get_instas(artists, worksheet, end)
-    #mytwitter.get_twitter_stats(artists, worksheet, end)
-    #vine.get_vine_stats(artists, worksheet, end)
-    #sc.get_followers(artists, worksheet, end)
 
     session.close()
 
@@ -275,6 +251,8 @@ def update_tracks_daily():
         track.days_from_release = track.days_from_release + 1
     session.add(track)
     '''
+
+#populate_current_spreadsheet(titles, movements, session)
 
 def update_tracks_weekly():
     session = db_setup.get_session()

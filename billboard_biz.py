@@ -85,6 +85,9 @@ def get_writers_producers_labels():
     producers = list()
     labels = list()
     n=0
+    '''
+    az ba
+    '''
     for title in titles:
         try:
             arr = title.get_text().split('\n')
