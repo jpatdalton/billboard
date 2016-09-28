@@ -1,0 +1,93 @@
+sudo yum install python-devel mysql-devel
+sudo yum install gcc
+sudo pip install soundcloud
+sudo pip install MySQL-python
+sudo pip install sqlalchemy
+sudo pip install beautifulsoup4
+sudo pip install gspread
+sudo pip install --upgrade oauth2client
+sudo pip install --upgrade google-api-python-client
+sudo pip install spotipy
+sudo pip install pytesseract
+sudo pip install selenium
+sudo pip install facebook-sdk
+sudo pip install python-twitter
+sudo pip install -U requests
+sudo yum install Xvfb firefox
+
+sudo pip install alembic
+
+import pytesseract
+from PIL import Image
+print(pytesseract.image_to_string(Image.open('/opt/python/bundle/2/app/billboard/test.png')))
+
+print(pytesseract.image_to_string(Image.open('test.png')))
+
+### FIREFOX
+cd /usr/local/
+sudo curl -X GET -o RPM-GPG-KEY-lambda-epll https://lambda-linux.io/RPM-GPG-KEY-lambda-epll
+sudo rpm --import RPM-GPG-KEY-lambda-epll
+sudo curl -X GET -o epll-release-2015.09-1.1.ll1.noarch.rpm https://lambda-linux.io/epll-release-2015.09-1.1.ll1.noarch.rpm
+sudo yum -y install epll-release-2015.09-1.1.ll1.noarch.rpm
+
+sudo yum --enablerepo=epll install firefox-compat
+
+wget 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-41.0.1.tar.bz2'
+tar xvjf firefox-41.0.1.tar.bz2
+sudo ln -s /usr/local/firefox/firefox /usr/bin/firefox
+
+
+sudo apt-get install tesseract-ocr
+
+### TRUE SCRIPTS tesseract ocr
+yum groupinstall "Development Tools" -y
+yum -y install wget cmake
+yum -y install libjpeg-devel libpng-devel libtiff-devel zlib-devel
+yum -y install gcc gcc-c++ make numpy
+
+cd /lib
+mkdir leptonica
+cd leptonica
+wget http://www.leptonica.com/source/leptonica-1.72.tar.gz
+tar -zxvf leptonica-1.72.tar.gz
+cd leptonica-1.72
+./configure
+make
+sudo make install
+
+cd /lib
+mkdir tesseract-ocr
+cd tesseract-ocr
+git clone https://github.com/tesseract-ocr/tesseract.git
+cd tesseract/
+./autogen.sh
+./configure
+make
+make install
+sudo ldconfig
+
+wget https://tesseract-ocr.googlecode.com/files/eng.traineddata.gz
+gunzip eng.traineddata.gz
+sudo mv -v eng.traineddata /usr/local/share/tessdata/
+
+### SCROT
+wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+rpm -Uvh rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+
+sudo yum install giblib-devel
+wget http://linuxbrit.co.uk/downloads/scrot-0.8.tar.gz
+tar xvfvz scrot-0.8.tar.gz
+cd scrot-0.8
+./configure
+make
+make install
+
+
+
+23 */4 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py artists ua > /home/ec2-user/log_artists_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+44 19 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py daily ud > /home/ec2-user/log_daily_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+11 14 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; PATH=$scraper/firefox:$PATH;sudo xvfb-run python billboard_top100.py weekly uw > /home/ec2-user/log_weekly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+33 */4 * * * root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python billboard_top100.py hourly uh > /home/ec2-user/log_hourly_`date +\%Y-\%m-\%d_\%H:\%M`.txt;
+58 23 * * * ec2-user cd /home/ec2-user/; tar czf archives/log_`date +\%Y-\%m-\%d`.tar.gz *.txt; sudo rm *.txt;
+03 14 * * 2 root scraper=`find /opt/python/bundle/ -name "billboard"`; cd $scraper; python oauth.py clear;
+01 14 * * 2 root cd /opt/python/current/app/billboard; python create_files.py
