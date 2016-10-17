@@ -1,4 +1,7 @@
 __author__ = 'jpatdalton'
+'''
+This file gets the artists, producers, writers, label, songs, position, and title from the billboard top 100
+'''
 
 import urllib2
 from bs4 import BeautifulSoup
@@ -9,6 +12,13 @@ import columns
 
 
 def get_details(worksheet, indices, end):
+    """This function gets the elements from the billboard biz hot 100 page
+
+    Args:
+        worksheet: the google drive worksheet
+        indices: the spreadsheet index for each top 100 element
+        end: Last index of spreadsheet
+    """
     driver = webdriver.Firefox()
     url = 'http://www.billboard.com/biz/charts/the-billboard-hot-100'
     driver.get(url)
@@ -60,6 +70,13 @@ def get_details(worksheet, indices, end):
     worksheet.update_cells(cell_list_labels)
 
 def get_writers_producers_labels():
+    """This function gets the writers and producers and labels form the hot 100 page
+
+    Returns:
+        writers: list of the top 100 writers
+        producers: list of the top 100 producers
+        labels: list of the top 100 labels
+    """
     driver = webdriver.Firefox()
     url = 'http://www.billboard.com/biz/charts/the-billboard-hot-100'
     driver.get(url)
@@ -68,10 +85,10 @@ def get_writers_producers_labels():
     login.click()
     time.sleep(5)
     name = driver.find_element_by_id('edit-name')
-    name.send_keys('steve@zeitlosent.com')
+    name.send_keys('')
     time.sleep(1)
     password = driver.find_element_by_id('edit-pass')
-    password.send_keys('steve')
+    password.send_keys('')
     time.sleep(1)
     password.send_keys(Keys.ENTER)
     time.sleep(11)
@@ -85,9 +102,6 @@ def get_writers_producers_labels():
     producers = list()
     labels = list()
     n=0
-    '''
-    az ba
-    '''
     for title in titles:
         try:
             arr = title.get_text().split('\n')
