@@ -3,6 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+alembic/
+dumps/
+new_tracks_and_artists/
+workon/
+*.json
+.DS_Store
+alembic.ini
+cron
+
 # C extensions
 *.so
 
