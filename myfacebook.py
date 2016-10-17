@@ -7,15 +7,15 @@ import requests
 import columns
 import db_setup
 
-APP_SECRET = 'de0ef4983d919423425e08ef6716b66e'
-APP_ID = '1105606712786170'
-client_token = '8f37afb961d3f2264ad736a94fa546ce'
-access_token = '1105606712786170|N51rfQuMviEjoIlqmBdGzZShes8'
-#access_token = 'CAACEdEose0cBACZA5EcHTRdGfPeRBXnqfvCG8VSeK3GiehuiE2YfzRvuY9co8OzEoW8SEKqn3zsoqqKZC8Sf6ZAdF7SsRodLY2Ne7fFG0yvbwMNnUHYBZCZA8kLZBFgVgLDHlZAUYBf8ZAck26MjYdZAlRkvkcThbO0SkrqogjjfdMWpGxVJZAJOgUR4T9OmBNmMUcAdBrZBGAYzE79QIytZAmqsoiYRNbVzLZCezfoVSnW881AZDZD'
+APP_SECRET = ''
+APP_ID = ''
+client_token = ''
+access_token = ''
+#access_token = ''
 
 def get_page_data(page_id):
     api_endpoint = "https://graph.facebook.com"
-    fb_graph_url = api_endpoint+"/"+page_id + '?&access_token=1105606712786170%7CN51rfQuMviEjoIlqmBdGzZShes8'
+    fb_graph_url = api_endpoint+"/"+page_id + '?&access_token='+ access_token
 
     try:
         api_request = urllib2.Request(fb_graph_url)

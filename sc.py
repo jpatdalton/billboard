@@ -4,8 +4,8 @@ import soundcloud
 import requests
 import columns
 
-YOUR_CLIENT_ID = 'c95e1781cd020bfb26b72024f50bbbed'
-YOUR_CLIENT_SECRET = 'fda9107818d27f857bcafeee668862db'
+YOUR_CLIENT_ID = ''
+YOUR_CLIENT_SECRET = ''
 
 def get_followers(artists, worksheet, end):
 

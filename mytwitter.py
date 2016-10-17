@@ -5,10 +5,10 @@ import twitter
 import columns
 
 
-access_token = '25019519-qtJxJOLiNEiBt7Cwu4w9jzzXhGvzK8e0QZP1ZwnxM'
-access_token_secret = 'GdabupT4MfE6zkGcxGMSMFQmsIM49HVTuYBxoTMcZRJGv'
-consumer_secret = 'hdBcUojJveQcFfBIWfytvDPCYJBIfIcP5cv7YE2zATxmMREzlT'
-consumer_key = 'DMazZZHzFk2UjBmFt9yuugqeo'
+access_token = ''
+access_token_secret = ''
+consumer_secret = ''
+consumer_key = ''
 
 
 def get_twitter_stats(artists, worksheet, end):

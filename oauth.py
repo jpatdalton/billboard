@@ -12,9 +12,10 @@ import columns
 import datetime
 import sys
 
+KEY_FILE = ''
 #TODO: create and archive spreadsheets on the go with gdata api
 def open_spreadsheet():
-    json_key = json.load(open('billboard-159a437cff31.json'))
+    json_key = json.load(open(KEY_FILE))
     scope = ['https://spreadsheets.google.com/feeds']
 
     credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)

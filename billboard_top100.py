@@ -1,9 +1,18 @@
 __author__ = 'jpatdalton'
 
+'''
+This file is the master file that is called to run all the methods to extract data from all the platforms.
+
+This master file essentially
+- gets top 100 artists and song info from billboard
+- create new song/artist if not already in db, else update
+- get artist info
+- get song info
+- update google drive spreadsheet with new info
+'''
+
 import urllib2
 from bs4 import BeautifulSoup
-import re
-import oauth
 import spins
 import youtube
 import spotify
@@ -22,12 +31,11 @@ import drive_sheet
 import sys
 import datetime
 from my_models import Artist, Track, Current_Spreadsheet
-from sqlalchemy.sql import exists, text, func
+from sqlalchemy.sql import text
 import smtplib
 from email.mime.text import MIMEText
-import os.path
 
-recipients = ['admin@unrestricted.co', 'steve@unrestricted.co', 'jpatdalton@gmail.com']
+recipients = []
 today = datetime.datetime.today()
 td = today.strftime("%m-%d-%y")
 artists_file = 'new_tracks_and_artists/new_artists_' + td + '.txt'
@@ -52,6 +60,7 @@ def get_top100():
     main_artists = list()
 
     total = 0
+    # TODO: This is an elementary splitting method, it should be improved
     for artist in song_artists:
         refined_names = artist.split('Featuring')
         count = 0
@@ -60,12 +69,6 @@ def get_top100():
             if len(refined_name1) > 1:
                 refined_name2 = refined_name1[0].split(',')
                 #refined_name3 = [i.split('With') for i in refined_name2]
-                '''
-                refined_name2 = [i.split(',') for i in refined_name1]
-                refined_name2 = [j for i in refined_name2 for j in i]
-                refined_name3 = [i.split('With') for i in refined_name2]
-                refined_name4 = [j for i in refined_name3 for j in i]
-                '''
                 for n in refined_name2:
                     count+=1
                     main_artists.append(n.strip())
