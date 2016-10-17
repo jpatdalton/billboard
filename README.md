@@ -1,2 +1,2 @@
 # billboard
-get stats to a spreadsheet
+Billboard Metrics Spreadsheet Generator
